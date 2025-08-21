@@ -1,27 +1,40 @@
 "use client";
+
+import { useState } from "react";
 import { useManagementStock, useManagementStockFilters } from "@/hooks/useManagementStock";
 import Input from "@/components/ui/input";
 import * as XLSX from "xlsx";
 import { formatPrice } from "@/services/utils/formatters";
+
+import {
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    DialogClose,
+} from "@/components/ui/dialog";
 import DataTablesReport from "@/components/tables/DataTablesReport";
+
 
 export default function ManagementStockPage() {
     const { managementStock, loading, error } = useManagementStock();
-        const { filters, filteredManagementStock, updateFilter } = useManagementStockFilters(managementStock);
+    const { filters, filteredManagementStock, updateFilter } = useManagementStockFilters(managementStock);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalBranches, setModalBranches] = useState<{name: string, stock: number}[] | null>(null);
     
-        const headersReportManagementStock = [
-            { key: "codeBarang", label: "Code Barang" },
-            { key: "namaBarang", label: "Nama Barang" },
-            { key: "kategori", label: "Kategori" },
-            { key: "satuan", label: "Satuan" },
-            { key: "stockAwal", label: "Stock Awal" },
-            { key: "stockMasuk", label: "Stock Masuk" },
-            { key: "stockKeluar", label: "Stock Keluar" },
-            { key: "sisaStock", label: "Sisa Stock" },
-            { key: "hargaSatuan", label: "Harga Satuan" },
-            { key: "nilaiPersediaan", label: "Nilai Persediaan" },
-            { key: "status", label: "Status" },
-        ];
+    const headersReportManagementStock = [
+        { key: "codeBarang", label: "Code Barang" },
+        { key: "namaBarang", label: "Nama Barang" },
+        { key: "kategori", label: "Kategori" },
+        { key: "satuan", label: "Satuan" },
+        { key: "stockAwal", label: "Stock Awal" },
+        { key: "stockMasuk", label: "Stock Masuk" },
+        { key: "stockKeluar", label: "Stock Keluar" },
+        { key: "sisaStock", label: "Sisa Stock" },
+        { key: "hargaSatuan", label: "Harga Satuan" },
+        { key: "nilaiPersediaan", label: "Nilai Persediaan" },
+        { key: "branchesSummary", label: "Branch Stock" },
+        { key: "status", label: "Status" },
+    ];
     
         const handleExportData = () => {
             const ws = XLSX.utils.json_to_sheet(filteredManagementStock);
@@ -30,12 +43,43 @@ export default function ManagementStockPage() {
             XLSX.writeFile(wb, "data-report-management-stock.xlsx");
         };
     
-        const datas = filteredManagementStock.map(managementStock => ({
-            ...managementStock,
-            satuan: formatPrice(managementStock.satuan),
+    const datas = filteredManagementStock.map(managementStock => {
+        let summary = "-";
+        if (managementStock.branches && managementStock.branches.length > 0) {
+            const total = managementStock.branches.reduce((sum, b) => sum + b.stock, 0);
+            summary = `${managementStock.branches.length} branches, total: ${total}`;
+        }
+        // Only include fields that are meant to be displayed in the table
+        return {
+            codeBarang: managementStock.codeBarang,
+            namaBarang: managementStock.namaBarang,
+            kategori: managementStock.kategori,
+            satuan: managementStock.satuan,
+            stockAwal: managementStock.stockAwal,
+            stockMasuk: managementStock.stockMasuk,
+            stockKeluar: managementStock.stockKeluar,
+            sisaStock: managementStock.sisaStock,
             hargaSatuan: formatPrice(managementStock.hargaSatuan),
             nilaiPersediaan: formatPrice(managementStock.nilaiPersediaan),
-        }))
+            branchesSummary: (
+                <>
+                    {summary}
+                    {managementStock.branches && managementStock.branches.length > 0 && (
+                        <button
+                            className="ml-2 text-xs text-blue-600 underline hover:text-blue-800"
+                            onClick={() => {
+                                setModalBranches(managementStock.branches!);
+                                setModalOpen(true);
+                            }}
+                        >
+                            View Details
+                        </button>
+                    )}
+                </>
+            ),
+            status: managementStock.status,
+        };
+    });
     
         if (loading) return <p className="p-4">Loading...</p>;
         if (error) return <p className="p-4 text-red-500">Data tidak ditemukan</p>;
@@ -96,6 +140,23 @@ export default function ManagementStockPage() {
                 </div>
             </div>
             <DataTablesReport data={datas} headers={headersReportManagementStock} />
+            {/* Modal for branch details */}
+                        <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+                            <DialogContent>
+                                <DialogTitle>Branch Stock Details</DialogTitle>
+                                <ul className="mb-4 max-h-60 overflow-y-auto">
+                                    {modalBranches?.map((b, idx) => (
+                                        <li key={idx} className="py-1 border-b border-gray-200 dark:border-neutral-700 flex justify-between">
+                                            <span>{b.name}</span>
+                                            <span className="font-mono">{b.stock}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                                <DialogClose asChild>
+                                    <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Close</button>
+                                </DialogClose>
+                            </DialogContent>
+                        </Dialog>
             </div>
     );
 }

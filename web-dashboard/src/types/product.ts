@@ -1,3 +1,10 @@
+export interface ProductIngredient {
+  codeBarang: string; // kode bahan baku
+  qty: number; // jumlah yang digunakan per produk
+  namaBarang?: string; // opsional, hasil lookup untuk UI
+  satuan?: string; // opsional, hasil lookup untuk UI
+}
+
 export interface Product {
   id?: string;
   name: string;
@@ -5,6 +12,7 @@ export interface Product {
   stock: number;
   price: number;
   status: ProductStatus;
+  ingredients?: ProductIngredient[]; // komposisi bahan baku
   // UI / computed fields
   margin?: number;
   hpp?: number;

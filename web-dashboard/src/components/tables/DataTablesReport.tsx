@@ -5,7 +5,7 @@ interface HeaderConfig {
   label: string;
 }
 interface DataTablesReportProps {
-  data: Array<Record<string, string | number | boolean>>;
+  data: Array<Record<string, React.ReactNode>>;
   headers: HeaderConfig[];
 }
 
@@ -23,7 +23,9 @@ export default function DataTablesReport({ data, headers }: DataTablesReportProp
         {data.map((row, rowIndex) => (
           <tr key={rowIndex} className="bg-white dark:bg-gray-800">
             {headers.map((header) => (
-              <td key={header.key} className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">{String(row[header.key] ?? "-")}</td>
+              <td key={header.key} className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                {row[header.key] ?? "-"}
+              </td>
             ))}
           </tr>
         ))}

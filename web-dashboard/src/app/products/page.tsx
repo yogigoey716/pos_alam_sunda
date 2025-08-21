@@ -2,13 +2,26 @@
 
 import { useState } from "react";
 import DataTablesReport from "@/components/tables/DataTablesReport";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogClose,
+} from "@/components/ui/dialog";
 import Input from "@/components/ui/input";
 import useMockProducts from "@/hooks/useMockProducts";
 import { useProductFilters } from "@/hooks/useProducts";
 import { exportToExcel, formatPrice } from "@/services/utils/formatters";
+import Link from "next/link";
+
+import { ProductIngredient } from "@/types/product";
+import { mockManagementStock } from "@/services/api/managementStock";
 
 export default function ProductsPage() {
   const [isOpen, setIsOpen] = useState(false);
+  // Modal komposisi
+  const [modalIngredients, setModalIngredients] = useState<ProductIngredient[] | null>(null);
+  const [modalProductName, setModalProductName] = useState<string>("");
   const { products, loading, error } = useMockProducts();
   const { filters, filteredProducts, updateFilter } = useProductFilters(products);
 
@@ -22,6 +35,7 @@ export default function ProductsPage() {
     { key: "category", label: "Kategori" },
     { key: "stock", label: "Stok" },
     { key: "price", label: "Harga" },
+    { key: "ingredients", label: "Komposisi" },
     { key: "status", label: "Status" },
   ];
 
@@ -35,10 +49,48 @@ export default function ProductsPage() {
     exportToExcel(filteredProducts, "data-produk");
   };
 
-  // Transform data for display with formatted price
-  const displayData = filteredProducts.map(product => ({
-    ...product,
-    price: formatPrice(product.price),
+  // Only show 4 main products
+  const mainProductNames = [
+    "Nasi Ayam Kremes",
+    "Teh Manis Dingin",
+    "Es Kopi Susu",
+    "Sate Maranggi",
+  ];
+  // Ambil 4 produk utama dari data asli, urut sesuai mainProductNames
+  const mainProducts = mainProductNames
+    .map(name => products.find(p => p.name.toLowerCase() === name.toLowerCase()))
+    .filter(Boolean);
+
+  const displayData = mainProducts.map(product => ({
+    name: product!.name,
+    category: product!.category,
+    stock: product!.stock,
+    price: formatPrice(product!.price),
+    ingredients: (
+      <button
+        className="text-xs text-blue-600 underline hover:text-blue-800"
+        onClick={() => {
+          setModalIngredients(product!.ingredients ?? []);
+          setModalProductName(product!.name);
+          setIsOpen(false);
+        }}
+      >
+        Lihat Komposisi
+      </button>
+    ),
+    status: (
+      <span
+        className={
+          product!.status === "Tersedia"
+            ? "inline-block px-2 py-1 text-xs font-semibold rounded bg-green-100 text-green-800"
+            : product!.status === "Stok Rendah"
+            ? "inline-block px-2 py-1 text-xs font-semibold rounded bg-yellow-100 text-yellow-800"
+            : "inline-block px-2 py-1 text-xs font-semibold rounded bg-red-100 text-red-800"
+        }
+      >
+        {product!.status}
+      </span>
+    ),
   }));
 
   if (loading) {
@@ -83,6 +135,14 @@ export default function ProductsPage() {
       </div>
 
       <div className="overflow-x-auto relative shadow-md sm:rounded-lg">
+        <div className="flex justify-end mb-4">
+          <Link
+            href="/products/add"
+            className="inline-block px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+          >
+            + Tambah Produk
+          </Link>
+        </div>
         <div className="flex flex-wrap justify-between items-center pb-4 space-y-4 sm:flex-row sm:space-y-0">
           <div className="relative">
             <button
@@ -175,6 +235,41 @@ export default function ProductsPage() {
         </div>
 
         <DataTablesReport data={displayData} headers={headersProducts} />
+        {/* Dialog Komposisi Produk (shadcn/ui) */}
+        <Dialog open={modalIngredients !== null} onOpenChange={open => !open && setModalIngredients(null)}>
+          <DialogContent>
+            <DialogTitle>Komposisi {modalProductName}</DialogTitle>
+            <ul className="mb-4 max-h-60 overflow-y-auto">
+              {modalIngredients && modalIngredients.length > 0 ? (
+                modalIngredients.map((i, idx) => {
+                  // Prioritaskan data dari ingredient jika sudah ada, fallback ke managementStock
+                  const namaBarang = i.namaBarang || mockManagementStock.find(b => b.codeBarang === i.codeBarang)?.namaBarang;
+                  const satuan = i.satuan || mockManagementStock.find(b => b.codeBarang === i.codeBarang)?.satuan;
+                  return (
+                    <li key={idx} className="py-1 border-b border-gray-200 dark:border-neutral-700 flex flex-col sm:flex-row sm:justify-between">
+                      <span>
+                        {namaBarang ? (
+                          <>
+                            <span className="font-semibold">{namaBarang}</span>
+                            <span className="text-xs text-gray-500 ml-2">({i.codeBarang})</span>
+                          </>
+                        ) : (
+                          <span>Kode: {i.codeBarang}</span>
+                        )}
+                      </span>
+                      <span className="font-mono">Qty: {i.qty} {satuan || ''}</span>
+                    </li>
+                  );
+                })
+              ) : (
+                <li className="text-gray-500">Tidak ada komposisi</li>
+              )}
+            </ul>
+            <DialogClose asChild>
+              <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Tutup</button>
+            </DialogClose>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

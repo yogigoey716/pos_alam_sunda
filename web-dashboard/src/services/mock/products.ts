@@ -1,5 +1,5 @@
-import mockProducts from '@/mocks/products';
 import { Product } from '@/types/product';
+import { mockProducts } from '../api/products';
 
 const delay = (ms = 300) => new Promise(resolve => setTimeout(resolve, ms));
 
