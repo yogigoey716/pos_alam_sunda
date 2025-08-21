@@ -1,0 +1,74 @@
+import { Sales } from "@/types/sales";
+
+export const mockSales = [
+    {
+        id: '1',
+        tanggal: "2025-08-20",
+        noTransaksi: "TRX-001",
+        totalItem: 10,
+        totalPenjualan: 100000,
+        diskon: 0,
+        pajak: 0,
+        grandTotal: 100000,
+        metodeBayar: "Cash",
+        kasir: "Admin",
+    },
+    {
+        id: '2',
+        tanggal: "2025-08-21",
+        noTransaksi: "TRX-002",
+        totalItem: 5,
+        totalPenjualan: 50000,
+        diskon: 0,
+        pajak: 0,
+        grandTotal: 50000,
+        metodeBayar: "QRIS",
+        kasir: "Admin",
+    },
+    {
+        id: '3',
+        tanggal: "2025-08-19",
+        noTransaksi: "TRX-003",
+        totalItem: 7,
+        totalPenjualan: 70000,
+        diskon: 0,
+        pajak: 0,
+        grandTotal: 70000,
+        metodeBayar: "QRIS",
+        kasir: "Orang",
+    },
+    {
+        id: '4',
+        tanggal: "2025-08-30",
+        noTransaksi: "TRX-004",
+        totalItem: 12,
+        totalPenjualan: 120000,
+        diskon: 0,
+        pajak: 0,
+        grandTotal: 120000,
+        metodeBayar: "QRIS",
+        kasir: "Admin",
+    },
+]
+
+export const salesService = {
+    getAll: async (): Promise<Sales[]> => {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 100));
+        return mockSales;
+    },
+    
+    getById: async (id: string): Promise<Sales | null> => {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        return mockSales.find(p => p.id === id) || null;
+    },
+    
+    update: async (id: string, product: Partial<Sales>): Promise<Sales | null> => {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        const index = mockSales.findIndex(p => p.id === id);
+        if (index === -1) return null;
+        
+        mockSales[index] = { ...mockSales[index], ...product };
+        return mockSales[index];
+    }
+}
