@@ -68,7 +68,7 @@ export default function ProductsPage() {
     price: formatPrice(product!.price),
     ingredients: (
       <button
-        className="text-xs text-blue-600 underline hover:text-blue-800"
+        className="text-xs border border-black bg-white text-black rounded px-2 py-1 hover:bg-gray-100"
         onClick={() => {
           setModalIngredients(product!.ingredients ?? []);
           setModalProductName(product!.name);
@@ -82,7 +82,7 @@ export default function ProductsPage() {
       <span
         className={
           product!.status === "Tersedia"
-            ? "inline-block px-2 py-1 text-xs font-semibold rounded bg-green-100 text-green-800"
+            ? "inline-block px-2 py-1 text-xs font-semibold rounded bg-blue-100 text-blue-800"
             : product!.status === "Stok Rendah"
             ? "inline-block px-2 py-1 text-xs font-semibold rounded bg-yellow-100 text-yellow-800"
             : "inline-block px-2 py-1 text-xs font-semibold rounded bg-red-100 text-red-800"
@@ -138,7 +138,7 @@ export default function ProductsPage() {
         <div className="flex justify-end mb-4">
           <Link
             href="/products/add"
-            className="inline-block px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+            className="inline-block px-4 py-2 border border-black bg-white text-black rounded-lg hover:bg-gray-100 transition"
           >
             + Tambah Produk
           </Link>
@@ -182,7 +182,7 @@ export default function ProductsPage() {
             <button
               onClick={handleExportData}
               type="button"
-              className="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-3 py-1.5 text-center me-2 mb-2 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800 mx-3 cursor-pointer"
+              className="border border-black bg-white text-black rounded-lg text-sm px-3 py-1.5 me-2 mb-2 hover:bg-gray-100 mx-3 cursor-pointer"
             >
               Export
             </button>
@@ -213,8 +213,8 @@ export default function ProductsPage() {
               <svg
                 className="w-5 h-5 text-gray-500 dark:text-gray-400"
                 aria-hidden="true"
-                fill="currentColor"
                 viewBox="0 0 20 20"
+                fill="currentColor"
               >
                 <path
                   fillRule="evenodd"
@@ -266,7 +266,7 @@ export default function ProductsPage() {
               )}
             </ul>
             <DialogClose asChild>
-              <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Tutup</button>
+              <button className="px-4 py-2 border border-black bg-white text-black rounded hover:bg-gray-100">Tutup</button>
             </DialogClose>
           </DialogContent>
         </Dialog>
