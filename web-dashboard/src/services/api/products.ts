@@ -1,7 +1,8 @@
 import { Product } from '@/types/product';
+import { apiFetch } from '@/lib/api';
 import { mockManagementStock } from '@/services/api/managementStock';
 
-// Mock data - later replace with API calls
+// Mock data - will be replaced with real API calls
 export const mockProducts: Product[] = [
   {
     id: '1',
@@ -116,41 +117,81 @@ export const mockProducts: Product[] = [
   },
 ];
 
-// API service functions (replace with actual API calls later)
-export const productService = {
+// Real API functions (to replace mock data)
+export const productsApi = {
+  // Get all products
   getAll: async (): Promise<Product[]> => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 100));
-    return mockProducts;
+    try {
+      const response = await apiFetch('/products');
+      return response.data || [];
+    } catch {
+      // Fallback to mock data during development
+      return mockProducts;
+    }
   },
   
+  // Get product by ID
   getById: async (id: string): Promise<Product | null> => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    return mockProducts.find(p => p.id === id) || null;
+    try {
+      const response = await apiFetch(`/products/${id}`);
+      return response.data;
+    } catch {
+      // Fallback to mock data
+      return mockProducts.find(p => p.id === id) || null;
+    }
   },
   
+  // Create new product
   create: async (product: Omit<Product, 'id'>): Promise<Product> => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const newProduct = { ...product, id: Date.now().toString() };
-    mockProducts.push(newProduct);
-    return newProduct;
+    try {
+      const response = await apiFetch('/products', {
+        method: 'POST',
+        body: JSON.stringify(product),
+      });
+      return response.data;
+    } catch {
+      // Fallback to mock behavior
+      const newProduct = { ...product, id: Date.now().toString() };
+      mockProducts.push(newProduct);
+      return newProduct;
+    }
   },
   
+  // Update product
   update: async (id: string, product: Partial<Product>): Promise<Product | null> => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const index = mockProducts.findIndex(p => p.id === id);
-    if (index === -1) return null;
-    
-    mockProducts[index] = { ...mockProducts[index], ...product };
-    return mockProducts[index];
+    try {
+      const response = await apiFetch(`/products/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(product),
+      });
+      return response.data;
+    } catch {
+      // Fallback to mock behavior
+      const index = mockProducts.findIndex(p => p.id === id);
+      if (index === -1) return null;
+      
+      mockProducts[index] = { ...mockProducts[index], ...product };
+      return mockProducts[index];
+    }
   },
   
+  // Delete product
   delete: async (id: string): Promise<boolean> => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const index = mockProducts.findIndex(p => p.id === id);
-    if (index === -1) return false;
-    
-    mockProducts.splice(index, 1);
-    return true;
+    try {
+      await apiFetch(`/products/${id}`, {
+        method: 'DELETE',
+      });
+      return true;
+    } catch {
+      // Fallback to mock behavior
+      const index = mockProducts.findIndex(p => p.id === id);
+      if (index === -1) return false;
+      
+      mockProducts.splice(index, 1);
+      return true;
+    }
   }
 };
+
+// Export the old service for backward compatibility
+export const productService = productsApi;

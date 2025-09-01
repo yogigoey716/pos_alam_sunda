@@ -1,7 +1,7 @@
 import { getToken } from "./auth";
+import { API_CONFIG } from "@/config/api";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL; 
-// contoh: http://127.0.0.1:8200
+const BASE_URL = API_CONFIG.BASE_URL;
 
 export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
   const token = getToken();
