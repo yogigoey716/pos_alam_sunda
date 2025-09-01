@@ -1,29 +1,22 @@
 
 "use client";
-
-// removed unused JSX import
-import { useEffect, useState } from "react";
+import { useEffect, useState, ComponentType } from "react";
 import { useRouter } from "next/navigation";
 
-import type { FC } from "react";
-// Constrain P to always include IntrinsicAttributes (PropsWithChildren covers this)
-export default function withAuth<P extends React.PropsWithChildren<object>>(WrappedComponent: React.ComponentType<P>): FC<P> {
-  const ProtectedRoute: FC<P> = (props) => {
+export default function withAuth<P extends Record<string, never> = Record<string, never>>(WrappedComponent: ComponentType<P>): ComponentType<P> {
+  const ProtectedRoute = (props: P) => {
     const router = useRouter();
     const [isChecking, setIsChecking] = useState(true);
 
     useEffect(() => {
       const token = localStorage.getItem("JWT");
-
       if (!token) {
-        // Kalau ga ada token → lempar ke login
         router.replace("/login");
       } else {
         setIsChecking(false);
       }
     }, [router]);
 
-    // Biar ga flicker pas cek token
     if (isChecking) {
       return <p className="p-6">🔒 Checking authentication...</p>;
     }
