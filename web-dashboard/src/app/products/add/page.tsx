@@ -136,4 +136,5 @@ function AddProductPage() {
   );
 }
 
-export default withAuth(AddProductPage)
+import type { FC } from "react";
+export default withAuth(AddProductPage) as unknown as FC;
