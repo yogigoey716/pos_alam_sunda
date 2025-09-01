@@ -1,12 +1,14 @@
 
 "use client";
 
-import type { JSX } from "react";
+// removed unused JSX import
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function withAuth<P extends JSX.IntrinsicAttributes>(WrappedComponent: React.ComponentType<P>) {
-  return function ProtectedRoute(props: P) {
+import type { FC } from "react";
+// Constrain P to always include IntrinsicAttributes (PropsWithChildren covers this)
+export default function withAuth<P extends React.PropsWithChildren<object>>(WrappedComponent: React.ComponentType<P>): FC<P> {
+  const ProtectedRoute: FC<P> = (props) => {
     const router = useRouter();
     const [isChecking, setIsChecking] = useState(true);
 
@@ -28,4 +30,5 @@ export default function withAuth<P extends JSX.IntrinsicAttributes>(WrappedCompo
 
     return <WrappedComponent {...props} />;
   };
+  return ProtectedRoute;
 }

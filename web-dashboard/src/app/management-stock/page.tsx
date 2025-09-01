@@ -172,4 +172,4 @@ function ManagementStockPage() {
     );
 }
 
-export default withAuth(ManagementStockPage) as unknown as React.FC;
+export default withAuth(ManagementStockPage);
