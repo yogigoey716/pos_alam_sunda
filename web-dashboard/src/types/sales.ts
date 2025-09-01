@@ -9,6 +9,7 @@ export interface Sales {
     grandTotal: number;
     metodeBayar: string;
     kasir: string;
+    cabang: string;
 }
 
 export interface SalesFormData {
@@ -27,4 +28,5 @@ export interface SalesFilters {
     searchTerm: string;
     startDate: string;
     endDate: string;
+    branch?: string;
 }

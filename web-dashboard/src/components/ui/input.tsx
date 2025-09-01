@@ -11,6 +11,7 @@ interface InputProps {
   type?: string;         // type input
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   defaultValue?: string;
+  required?: boolean;
 }
 
 export default function Input({
@@ -23,6 +24,7 @@ export default function Input({
   onChange,
   type,
   defaultValue,
+  required,
 }: InputProps) {
   return (
     <div
@@ -43,6 +45,7 @@ export default function Input({
         onChange={onChange}
         defaultValue={defaultValue}
         className={className}
+        required={required}
       />
       
     </div>

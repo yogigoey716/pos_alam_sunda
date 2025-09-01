@@ -1,3 +1,4 @@
+"use client";
 import HPPCardGrid from "@/components/cards/HPPCardGrid";
 
 
@@ -14,11 +15,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BarCharts from "@/components/charts/BarCharts";
 import PieCharts from "@/components/charts/PieCharts";
 import DataTablesReport from "@/components/tables/DataTablesReport";
+import Selects from "@/components/ui/selects";
+import { useState, useEffect } from "react";
+import withAuth from "@/utils/withAuth";
+import { apiFetch } from "@/lib/api";
+import { getToken } from "@/lib/auth";
+type BranchKey = "all" | "bogor" | "depok";
 
-export default function Home() {
+
+function Home() {
 
   // Dummy data
-  const totalSales = 12000000;
+  const [totalSales, setTotalSales] = useState(0);
   const totalStock = 350;
   const totalProfit = 3200000;
   const totalOrders = 120;
@@ -26,20 +34,58 @@ export default function Home() {
   const hpp = 30000;
   const profit = price - hpp;
   const margin = (profit / price) * 100;
-  const totalPenjualanPending = 120;
-  const totalPenjualanSuccess = 120;
+  const [totalPenjualanDraft, setTotalPenjualanDraft] = useState(0);
+  const [totalPenjualanSuccess, setTotalPenjualanSuccess] = useState(0);
+  const [totalPenjualanPending, setTotalPenjualanPending] = useState(0);
+  const [branch, setBranch] = useState<BranchKey | "all">("all");
+
+  useEffect(() => {
+    const fetchTotalSales = async () => {
+      try {
+        const response = await apiFetch("/new-pos-api/transactions/transactions", {
+          method: "GET",
+          headers: { "Content-Type": "application/json"},
+        });
+        setTotalSales(response.data.items.reduce((total: number, trx: any) => total + trx.total_amount, 0));
+        const totalPenjualanDraft = response.data.items.reduce((sum:number, trx:any) => {
+          if(trx.status === "draft") {
+            return sum + trx.total_amount;
+          }
+          return sum;
+        }, 0);
+        setTotalPenjualanDraft(totalPenjualanDraft);
+        const totalPenjualanSuccess = response.data.items.reduce((sum:number, trx:any) => {
+          if(trx.status === "selesai") {
+            return sum + trx.total_amount;
+          }
+          return sum;
+        }, 0);
+        setTotalPenjualanSuccess(totalPenjualanSuccess);
+        const totalPenjualanPending = response.data.items.reduce((sum:number, trx:any) => {
+          if(trx.status === "pending") {
+            return sum + trx.total_amount;
+          }
+          return sum;
+        }, 0);
+        setTotalPenjualanPending(totalPenjualanPending);
+      } catch (err) {
+        console.error("Fetch total sales error:", err);
+      }
+    };
+    fetchTotalSales();
+  }, []);
+
+  const sortOptionsBranch = [
+    { label: "All", value: "all" },
+    { label: "Bogor", value: "bogor" },
+    { label: "Depok", value: "depok" },
+  ];
 
   const dataStock = [
-    { name: "Nasi Ayam Kremes", stock: 150 },
-    { name: "Teh", stock: 120 },
-    { name: "Es Kopi Susu", stock: 110 },
-    { name: "Sate Maranggi", stock: 100 },
-    { name: "Soto Ayam", stock: 95 },
-    { name: "Jus Jeruk", stock: 90 },
-    { name: "Lemon Tea", stock: 85 },
-    { name: "Mie Goreng", stock: 80 },
-    { name: "Nasi Goreng", stock: 77 },
-    { name: "Ayam Bakar", stock: 20 },
+    {name: "Nasi Ayam Kremes", stock: 150},
+    {name: "Sate Maranggi", stock: 130},
+    {name: "Es Kopi Susu", stock: 120},
+    {name: "Air Mineral", stock: 30},
   ]
 
   const dataCategoryStock = [
@@ -48,12 +94,31 @@ export default function Home() {
   ]
 
   const dataBahanBaku = [
+
     { name: "Beras", item: 150 },
     { name: "Gula", item: 120 },
     { name: "Telur", item: 110 },
     { name: "Ikan", item: 100 },
     { name: "Daging", item: 95 },
     { name: "Sayuran", item: 90 },
+  ]
+  const dataBahanBakuDepok = [
+
+    { name: "Beras", item: 150 },
+    { name: "Gula", item: 10 },
+    { name: "Telur", item: 9 },
+    { name: "Ikan", item: 8 },
+    { name: "Daging", item: 7 },
+    { name: "Sayuran", item: 6 },
+  ]
+  const dataBahanBakuBogor = [
+
+    { name: "Beras", item: 9 },
+    { name: "Gula", item: 8},
+    { name: "Telur", item: 7 },
+    { name: "Ikan", item: 6 },
+    { name: "Daging", item: 5 },
+    { name: "Sayuran", item: 4 },
   ]
 
   const headersBahanBaku = [
@@ -106,6 +171,17 @@ export default function Home() {
   const now = new Date();
   const monthYear = now.toLocaleString("id-ID", { month: "long", year: "numeric" });
 
+  const getFilteredData = () => {
+    if (branch === "bogor") {
+      return dataBahanBakuBogor;
+    } else if (branch === "depok") {
+      return dataBahanBakuDepok;
+    }
+    return dataBahanBaku;
+  };
+
+  const filteredData = getFilteredData();
+
   return (
     <div className="w-full">
       <div className="mb-8">
@@ -119,7 +195,7 @@ export default function Home() {
         <div className="flex flex-col flex-1 h-full">
           <Scorecard
             title="Total Penjualan"
-            value={"Rp. " + totalSales.toLocaleString()}
+            value={"Rp. " + totalSales.toLocaleString("id-ID")}
             icon={<span className="text-blue-500">💰</span>}
             subtitle={monthYear}
           />
@@ -128,7 +204,7 @@ export default function Home() {
           <Scorecard title="Total Stok" value={totalStock} icon={<span className="text-green-500">📦</span>} />
         </div>
         <div className="flex flex-col flex-1 h-full">
-          <Scorecard title="Total Profit" value={"Rp. " + totalProfit.toLocaleString()} icon={<span className="text-pink-500">📈</span>} />
+          <Scorecard title="Total Profit" value={"Rp. " + totalProfit.toLocaleString("id-ID")} icon={<span className="text-pink-500">📈</span>} />
         </div>
         <div className="flex flex-col flex-1 h-full">
           <Scorecard title="Total Penjualan" value={totalOrders.toLocaleString()} icon={<span className="text-pink-500">📦</span>} />
@@ -137,31 +213,41 @@ export default function Home() {
       <div className="my-2">
         <h1 className="text-3xl font-bold">Statistik Penjualan</h1>
       </div>
-      <div className="grid grid-cols-1 gap-6 items-stretch mb-8 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 items-stretch mb-8 md:grid-cols-4">
         <div className="flex flex-col flex-1 h-full">
           <Scorecard
             title="Total Penjualan"
-            value={totalOrders.toLocaleString()}
-            icon={<span className="text-blue-500">📦</span>}
+            value={"Rp. " + totalSales.toLocaleString("id-ID")}
+            icon={<span className="text-blue-500">💰</span>}
+          />
+        </div>
+        <div className="flex flex-col flex-1 h-full">
+          <Scorecard
+            title="Total Penjualan Draft"
+            value={"Rp. " + totalPenjualanDraft.toLocaleString("id-ID")}
+            icon={<span className="text-blue-500">💰</span>}
           />
         </div>
         <div className="flex flex-col flex-1 h-full">
           <Scorecard
             title="Total Penjualan Pending"
-            value={totalPenjualanPending.toLocaleString()}
-            icon={<span className="text-blue-500">📦</span>}
+            value={"Rp. " + totalPenjualanPending.toLocaleString("id-ID")}
+            icon={<span className="text-blue-500">💰</span>}
           />
         </div>
         <div className="flex flex-col flex-1 h-full">
           <Scorecard
             title="Total Penjualan Success"
-            value={totalPenjualanSuccess.toLocaleString()}
-            icon={<span className="text-blue-500">📦</span>}
+            value={"Rp. " + totalPenjualanSuccess.toLocaleString("id-ID")}
+            icon={<span className="text-blue-500">💰</span>}
           />
         </div>
       </div>
       <div className="my-2">
         <h1 className="text-3xl font-bold">Management Stock</h1>
+      </div>
+      <div className="grid grid-col-1">
+        
       </div>
       <div className="grid grid-cols-1 gap-6 items-stretch mb-8 md:grid-cols-2">
         <Card>
@@ -182,10 +268,21 @@ export default function Home() {
       <div className="grid grid-cols-1 gap-6 items-stretch mb-8 md:grid-cols-2">
         <Card>
           <CardHeader>
+          <div className="grid grid-cols-2">
             <CardTitle>Bahan Baku yang sering dipakai</CardTitle>
+            <Selects
+                label="Cabang"
+                options={sortOptionsBranch}     // langsung kirim {label, value}
+                id="sort"
+                name="sort"
+                value={branch}                  // state branch sekarang
+                onChange={(val) => setBranch(val as BranchKey)} // update state saat ganti cabang
+                className="flex gap-2 items-center"
+              />
+          </div>
           </CardHeader>
           <CardContent>
-            <BarCharts data={dataBahanBaku} dataKey="item" />
+            <BarCharts data={filteredData} dataKey="item" />
           </CardContent>
         </Card>
         <Card>
@@ -270,3 +367,5 @@ export default function Home() {
     </div>
   );
 }
+
+export default withAuth(Home);

@@ -12,6 +12,7 @@ export const mockSales = [
         grandTotal: 100000,
         metodeBayar: "Cash",
         kasir: "Admin",
+        cabang: "Bogor",
     },
     {
         id: '2',
@@ -24,6 +25,7 @@ export const mockSales = [
         grandTotal: 50000,
         metodeBayar: "QRIS",
         kasir: "Admin",
+        cabang: "Depok",
     },
     {
         id: '3',
@@ -36,6 +38,7 @@ export const mockSales = [
         grandTotal: 70000,
         metodeBayar: "QRIS",
         kasir: "Orang",
+        cabang: "Bogor",
     },
     {
         id: '4',
@@ -48,6 +51,7 @@ export const mockSales = [
         grandTotal: 120000,
         metodeBayar: "QRIS",
         kasir: "Admin",
+        cabang: "Depok",
     },
 ]
 

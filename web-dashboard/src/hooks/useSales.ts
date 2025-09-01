@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import { Sales, SalesFilters } from "@/types/sales";
 import { salesService } from "@/services/api/seles";
 
+type BranchKey = "all" | "bogor" | "depok";
+
 export const useSales = () => {
     const [sales, setSales] = useState<Sales[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [branch, setBranch] = useState<BranchKey | "all">("all");
 
     const fetchSales = async () => {
         try {
@@ -29,6 +32,8 @@ export const useSales = () => {
         sales,
         loading,
         error,
+        branch,
+        setBranch,
     };
 }
 
@@ -37,6 +42,7 @@ export const useSalesFilters = (sales: Sales[]) => {
         searchTerm: '',
         startDate: '',
         endDate: '',
+        branch: '',
     });
 
     const filteredSales = sales.filter((sale) => {
@@ -50,6 +56,9 @@ export const useSalesFilters = (sales: Sales[]) => {
                 return false;
             }
         }
+        if (filters.branch !== 'all' && sale.cabang.toLowerCase() !== filters.branch?.toLowerCase()) {
+            return false;
+        }
         return true;
     });
 
@@ -61,6 +70,6 @@ export const useSalesFilters = (sales: Sales[]) => {
         filters,
         filteredSales,
         updateFilter,
-        setFilters
+        setFilters,
     };
 }

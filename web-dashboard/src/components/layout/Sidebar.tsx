@@ -1,5 +1,5 @@
 import React from "react";
-import { Home, BarChart2, ShoppingBag, Settings, Box } from "lucide-react";
+import { Home, BarChart2, ShoppingBag, Box } from "lucide-react";
 import Link from "next/link";
 
 const menu = [
@@ -7,7 +7,7 @@ const menu = [
   { label: "Penjualan", icon: <BarChart2 className="w-5 h-5" />, href: "/sales" },
   { label: "Produk", icon: <ShoppingBag className="w-5 h-5" />, href: "/products" },
   { label: "Management Stock", icon: <Box className="w-5 h-5" />, href: "/management-stock" },
-  // { label: "Pengaturan", icon: <Settings className="w-5 h-5" />, href: "/settings" },
+  { label: "Transaksi", icon: <Box className="w-5 h-5" />, href: "/transactions" },
 ];
 
 export default function Sidebar() {
