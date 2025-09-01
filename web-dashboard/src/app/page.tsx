@@ -19,8 +19,19 @@ import Selects from "@/components/ui/selects";
 import { useState, useEffect } from "react";
 import withAuth from "@/utils/withAuth";
 import { apiFetch } from "@/lib/api";
-import { getToken } from "@/lib/auth";
 type BranchKey = "all" | "bogor" | "depok";
+
+interface TransactionItem {
+  total_amount: number;
+  status: string;
+}
+
+interface SalesTotals {
+  total: number;
+  draft: number;
+  success: number;
+  pending: number;
+}
 
 
 function Home() {
@@ -46,28 +57,22 @@ function Home() {
           method: "GET",
           headers: { "Content-Type": "application/json"},
         });
-        setTotalSales(response.data.items.reduce((total: number, trx: any) => total + trx.total_amount, 0));
-        const totalPenjualanDraft = response.data.items.reduce((sum:number, trx:any) => {
-          if(trx.status === "draft") {
-            return sum + trx.total_amount;
-          }
-          return sum;
-        }, 0);
-        setTotalPenjualanDraft(totalPenjualanDraft);
-        const totalPenjualanSuccess = response.data.items.reduce((sum:number, trx:any) => {
-          if(trx.status === "selesai") {
-            return sum + trx.total_amount;
-          }
-          return sum;
-        }, 0);
-        setTotalPenjualanSuccess(totalPenjualanSuccess);
-        const totalPenjualanPending = response.data.items.reduce((sum:number, trx:any) => {
-          if(trx.status === "pending") {
-            return sum + trx.total_amount;
-          }
-          return sum;
-        }, 0);
-        setTotalPenjualanPending(totalPenjualanPending);
+
+        // Calculate totals for different transaction statuses
+        const totals: SalesTotals = response.data.items.reduce((acc: SalesTotals, trx: TransactionItem) => {
+          acc.total += trx.total_amount;
+          if (trx.status === "draft") acc.draft += trx.total_amount;
+          if (trx.status === "selesai") acc.success += trx.total_amount;
+          if (trx.status === "pending") acc.pending += trx.total_amount;
+          return acc;
+        }, { total: 0, draft: 0, success: 0, pending: 0 });
+
+        // Update all state variables at once
+        setTotalSales(totals.total);
+        setTotalPenjualanDraft(totals.draft);
+        setTotalPenjualanSuccess(totals.success);
+        setTotalPenjualanPending(totals.pending);
+
       } catch (err) {
         console.error("Fetch total sales error:", err);
       }
