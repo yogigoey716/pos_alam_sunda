@@ -6,7 +6,7 @@ interface HeaderConfig {
   label: string;
 }
 interface DataTablesReportProps {
-  data: Array<Record<string, React.ReactNode>>;
+  data: Array<Record<string, string | number | React.ReactNode>>;
   headers: HeaderConfig[];
   page?: number;
   setPage?: (page: number) => void;

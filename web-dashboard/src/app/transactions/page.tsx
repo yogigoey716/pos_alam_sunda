@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import DataTablesReport from "@/components/tables/DataTablesReport";
 import WithAuth from "@/utils/withAuth";
 import Selects from "@/components/ui/selects";
-import useTransactions from "@/hooks/useTransactions";
+import useTransactions, { TransactionTable } from "@/hooks/useTransactions";
 import { optionsStatus, optionsIsPaid } from "@/constants/transactionsOptions";
 import Input from "@/components/ui/input";
 import * as XLSX from "xlsx";
@@ -27,13 +27,17 @@ function TransactionsPage() {
     setIsOpen(!isOpen);
   };
 
-  const handleExportData = (transactions: any[]) => {
+  const handleExportData = (transactions: TransactionTable[]) => {
     if (!transactions || transactions.length === 0) return;
     const ws = XLSX.utils.json_to_sheet(transactions);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Data Report Transactions");
     XLSX.writeFile(wb, "data-report-transactions.xlsx");
   };
+
+  const onUnauthorized = useCallback(() => {
+    router.push("/login");
+  }, [router]);
 
   const { transactions, total, pages, isLoading, error } = useTransactions({
     status,
@@ -43,7 +47,7 @@ function TransactionsPage() {
     size,
     startDate,
     endDate,
-    onUnauthorized: () => router.push("/login"),
+    onUnauthorized,
   });
 
   return (

@@ -4,6 +4,38 @@ import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import { formatCurrency } from "@/utils/formatter";
 
+interface Branch {
+  description: string;
+}
+
+interface PaymentMethod {
+  description: string;
+}
+interface TransactionRaw {
+  id: string;
+  payment_methods?: PaymentMethod;
+  amount_paid: number;
+  change: number;
+  total_amount: number;
+  branch?: Branch;
+}
+
+interface TransactionResponse {
+  total: number;
+  pages: number;
+  items: TransactionRaw[];
+}
+
+export interface TransactionTable {
+  id: string;
+  payment_methods: string;
+  amount_paid: string;
+  change: string;
+  total_amount: string;
+  branch: string;
+  [key: string]: string;
+}
+
 interface UseTransactionsParams {
   status: string;
   isPaid: string;
@@ -25,7 +57,7 @@ export default function useTransactions({
   endDate,
   onUnauthorized,
 }: UseTransactionsParams) {
-  const [transactions, setTransactions] = useState<any[]>([]);
+  const [transactions, setTransactions] = useState<TransactionTable[]>([]);
   const [total, setTotal] = useState(0);
   const [pages, setPages] = useState(0);
   const [isLoading, setLoading] = useState(false);
@@ -52,25 +84,29 @@ export default function useTransactions({
           method: "GET",
           headers: { "Content-Type": "application/json" },
         });
-        
 
-        setTotal(res.data.total);
-        setPages(res.data.pages);
-        setTransactions(
-          res.data.items.map((trx: any) => ({
-            ...trx,
-            payment_methods: trx.payment_methods?.description ?? "-",
-            amount_paid: formatCurrency(trx.amount_paid),
-            change: formatCurrency(trx.change),
-            total_amount: formatCurrency(trx.total_amount),
-            branch: trx.branch ? trx.branch.description :"-",
-          }))
-        );
-      } catch (err: any) {
-        
-        setError(err);
-        if (err.message?.includes("Unauthorized") && onUnauthorized) {
-          onUnauthorized();
+        const data = res.data as TransactionResponse;
+
+        const formattedTransactions: TransactionTable[] = data.items.map((item) => ({
+          ...item,
+          payment_methods: item.payment_methods?.description || "",
+          amount_paid: formatCurrency(item.amount_paid),
+          change: formatCurrency(item.change),
+          total_amount: formatCurrency(item.total_amount),
+          branch: item.branch?.description || "",
+        }));  
+
+        setTotal(data.total);
+        setPages(data.pages);
+        setTransactions(formattedTransactions);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err);
+          if (err.message?.includes("Unauthorized") && onUnauthorized) {
+            onUnauthorized();
+          }
+        } else {
+          console.error("Unexpected error: ", err);
         }
       } finally {
         setLoading(false);
@@ -78,7 +114,7 @@ export default function useTransactions({
     };
 
     fetchTransactions();
-  }, [status, isPaid, page, size, search, startDate, endDate]);
+  }, [status, isPaid, page, size, search, startDate, endDate, onUnauthorized]);
 
   return { transactions, total, pages, isLoading, error };
 }
