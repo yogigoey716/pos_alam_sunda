@@ -373,4 +373,5 @@ function Home() {
   );
 }
 
-export default withAuth(Home);
+import type { FC } from "react";
+export default withAuth(Home) as unknown as FC;
