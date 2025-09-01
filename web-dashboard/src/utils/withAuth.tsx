@@ -1,9 +1,11 @@
+
 "use client";
 
+import type { JSX } from "react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function withAuth<P>(WrappedComponent: React.ComponentType<P>) {
+export default function withAuth<P extends JSX.IntrinsicAttributes>(WrappedComponent: React.ComponentType<P>) {
   return function ProtectedRoute(props: P) {
     const router = useRouter();
     const [isChecking, setIsChecking] = useState(true);
