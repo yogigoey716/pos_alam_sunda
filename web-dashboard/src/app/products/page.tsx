@@ -1,6 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import withAuth from "@/utils/withAuth";
+import useProducts from "@/hooks/useProducts";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Selects from "@/components/ui/selects";
+import Input from "@/components/ui/input";
+import { optionsCategory, optionsStatus } from "@/constants/productsOptions";
 import DataTablesReport from "@/components/tables/DataTablesReport";
 import {
   Dialog,
@@ -8,131 +15,57 @@ import {
   DialogTitle,
   DialogClose,
 } from "@/components/ui/dialog";
-import Input from "@/components/ui/input";
-import useMockProducts from "@/hooks/useMockProducts";
-import { useProductFilters } from "@/hooks/useProducts";
-import { exportToExcel, formatPrice } from "@/services/utils/formatters";
-import Link from "next/link";
-
 import { ProductIngredient } from "@/types/product";
-import { mockManagementStock } from "@/services/api/managementStock";
-import withAuth from "@/utils/withAuth";
+import { formatCurrency, useExportExcel } from "@/services/utils/formatters";
 
 function ProductsPage() {
-  const [isOpen, setIsOpen] = useState(false);
-  // Modal komposisi
-  const [modalIngredients, setModalIngredients] = useState<ProductIngredient[] | null>(null);
-  const [modalProductName, setModalProductName] = useState<string>("");
-  const { products, loading, error } = useMockProducts();
-  const { filters, filteredProducts, updateFilter } = useProductFilters(products);
-  const [isOpenFilter, setIsOpenFilter] = useState(false);
-    
-    const toggleCollapse = () => {
-      setIsOpenFilter(!isOpenFilter);
-    };
+  const router = useRouter();
+  const { exportToExcel } = useExportExcel();
 
-  const handleSelect = (value: string) => {
-    updateFilter('category', value);
-    setIsOpen(false);
+  const [filters, setFilters] = useState({
+    status: "",
+    cate: "",
+    search: "",
+    page: 1,
+    size: 10,
+    startDate: "",
+    endDate: "",
+  });
+
+  const [showFilter, setShowFilter] = useState(false);
+
+  const [modalData, setModalData] = useState<{
+    name: string;
+    items: ProductIngredient[];
+  } | null>(null);
+
+  const handleChangeFilter = (
+    key: keyof typeof filters,
+    value: string | number
+  ) => {
+    setFilters((prev) => ({ ...prev, [key]: value, page: 1 }));
   };
 
-  const headersProducts = [
-    { key: "name", label: "Nama Produk" },
-    { key: "category", label: "Kategori" },
-    { key: "stock", label: "Stok" },
-    { key: "price", label: "Harga" },
-    { key: "ingredients", label: "Komposisi" },
-    { key: "status", label: "Status" },
-  ];
-
-  const filterOptions = [
-    { label: "Semua Produk", value: "all" },
-    { label: "Makanan", value: "makanan" },
-    { label: "Minuman", value: "minuman" },
-  ];
-
-  const handleExportData = () => {
-    exportToExcel(filteredProducts, "data-produk");
+  const handleExport = () => {
+    exportToExcel(products, "products", "Products");
   };
 
-  // Only show 4 main products
-  const mainProductNames = [
-    "Nasi Ayam Kremes",
-    "Teh Manis Dingin",
-    "Es Kopi Susu",
-    "Sate Maranggi",
-  ];
-  // Ambil 4 produk utama dari data asli, urut sesuai mainProductNames
-  const mainProducts = mainProductNames
-    .map(name => products.find(p => p.name.toLowerCase() === name.toLowerCase()))
-    .filter(Boolean);
+  const handleChangePage = (newPage: number) => {
+    setFilters((prev) => ({ ...prev, page: newPage }));
+  };
 
-  const displayData = mainProducts.map(product => ({
-    name: product!.name,
-    category: product!.category,
-    stock: product!.stock,
-    price: formatPrice(product!.price),
-    ingredients: (
-      <button
-        className="px-2 py-1 text-xs text-black bg-white rounded border border-black hover:bg-gray-100"
-        onClick={() => {
-          setModalIngredients(product!.ingredients ?? []);
-          setModalProductName(product!.name);
-          setIsOpen(false);
-        }}
-      >
-        Lihat Komposisi
-      </button>
-    ),
-    status: (
-      <span
-        className={
-          product!.status === "Tersedia"
-            ? "inline-block px-2 py-1 text-xs font-semibold rounded bg-blue-100 text-blue-800"
-            : product!.status === "Stok Rendah"
-            ? "inline-block px-2 py-1 text-xs font-semibold rounded bg-yellow-100 text-yellow-800"
-            : "inline-block px-2 py-1 text-xs font-semibold rounded bg-red-100 text-red-800"
-        }
-      >
-        {product!.status}
-      </span>
-    ),
-  }));
+  const onUnauthorized = useCallback(() => {
+    router.push("/login");
+  }, [router]);
 
-  if (loading) {
-    return (
-      <div className="w-full">
-        <div className="mb-8">
-          <h1 className="mb-2 text-3xl font-bold tracking-tight">Produk</h1>
-          <p className="text-base text-gray-500 dark:text-gray-400">
-            Kelola semua produk dalam sistem Anda
-          </p>
-        </div>
-        <div className="flex justify-center items-center h-64">
-          <div className="text-lg">Loading...</div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="w-full">
-        <div className="mb-8">
-          <h1 className="mb-2 text-3xl font-bold tracking-tight">Produk</h1>
-          <p className="text-base text-gray-500 dark:text-gray-400">
-            Kelola semua produk dalam sistem Anda
-          </p>
-        </div>
-        <div className="flex justify-center items-center h-64">
-          <div className="text-lg text-red-500">Error: {error}</div>
-        </div>
-      </div>
-    );
-  }
+  const { products, total, pages, isLoading, error } = useProducts({
+    ...filters,
+    onUnauthorized,
+  });
 
   return (
     <div className="w-full">
+      {/* Header */}
       <div className="mb-8">
         <h1 className="mb-2 text-3xl font-bold tracking-tight">Produk</h1>
         <p className="text-base text-gray-500 dark:text-gray-400">
@@ -140,143 +73,139 @@ function ProductsPage() {
         </p>
       </div>
 
+      {/* Action buttons */}
       <div className="overflow-x-auto relative shadow-md sm:rounded-lg">
-        <div className="flex justify-end mb-4">
+        <div className="flex justify-between mb-4">
           <Link
             href="/products/add"
             className="inline-block px-4 py-2 text-black bg-white rounded-lg border border-black transition hover:bg-gray-100"
           >
             + Tambah Produk
           </Link>
+          <button
+            onClick={() => setShowFilter((prev) => !prev)}
+            className="px-4 py-2 text-sm text-green-700 rounded-lg border border-green-700 hover:bg-green-700 hover:text-white"
+          >
+            {showFilter ? "Hide Filter" : "Show Filter"}
+          </button>
         </div>
-        <button onClick={toggleCollapse} className="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 my-6 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">
-          {isOpenFilter ? 'Hide Filter' : 'Show Filter'}
-        </button>
-        {isOpenFilter && (
-          <div className="flex flex-wrap justify-between items-center pb-4 space-y-4 sm:flex-row sm:space-y-0">
-            <div className="relative">
-              <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none 
-                  hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 
-                  dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 
-                  dark:focus:ring-gray-700 cursor-pointer"
-                type="button"
-              >
-                <svg
-                  className="w-3 h-3 text-gray-500 dark:text-gray-400 me-3"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
-                </svg>
-                {filterOptions.find((f) => f.value === filters.category)?.label}
-                <svg
-                  className="w-2.5 h-2.5 ms-2.5"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 10 6"
-                >
-                  <path
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="m1 1 4 4 4-4"
-                  />
-                </svg>
-              </button>
-              <button
-                onClick={handleExportData}
-                type="button"
-                className="border border-black bg-white text-black rounded-lg text-sm px-3 py-1.5 me-2 mb-2 hover:bg-gray-100 mx-3 cursor-pointer"
-              >
-                Export
-              </button>
-
-              {isOpen && (
-                <div className="absolute z-10 mt-2 w-48 bg-white rounded-lg divide-y divide-gray-100 shadow-sm dark:bg-gray-700 dark:divide-gray-600">
-                  <ul className="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200">
-                    {filterOptions.map((option, idx) => (
-                      <li key={idx}>
-                        <Input
-                          id={`filter-radio-${idx}`}
-                          name="filter-radio"
-                          value={option.value}
-                          label={option.label}
-                          type="radio"
-                          checked={filters.category === option.value}
-                          onChange={() => handleSelect(option.value)}
-                        />
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-
-            <div className="relative">
-              <div className="flex absolute inset-y-0 left-0 items-center pointer-events-none ps-3">
-                <svg
-                  className="w-5 h-5 text-gray-500 dark:text-gray-400"
-                  aria-hidden="true"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
-              <input
-                type="text"
-                id="table-search"
-                value={filters.searchTerm}
-                onChange={(e) => updateFilter('searchTerm', e.target.value)}
-                className="block p-2 w-80 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 ps-10 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Cari produk..."
-              />
-            </div>
+        
+        {/* Filters */}
+        {showFilter && (
+          <div className="flex flex-wrap gap-2 pb-4">
+            <Selects
+              id="status_filter"
+              name="status_filter"
+              label="Status"
+              options={optionsStatus}
+              value={filters.status}
+              onChange={(val) => handleChangeFilter("status", val)}
+            />
+            <Selects
+              id="category"
+              name="category"
+              label="Category"
+              options={optionsCategory}
+              value={filters.cate}
+              onChange={(val) => handleChangeFilter("cate", val)}
+            />
+            <Input
+              type="date"
+              id="start_date"
+              name="start_date"
+              label="Start Date"
+              value={filters.startDate}
+              onChange={(e) => handleChangeFilter("startDate", e.target.value)}
+              className="w-64"
+            />
+            <Input
+              type="date"
+              id="end_date"
+              name="end_date"
+              label="End Date"
+              value={filters.endDate}
+              onChange={(e) => handleChangeFilter("endDate", e.target.value)}
+              className="w-64"
+            />
+            <button
+              onClick={handleExport}
+              className="px-3 py-2 mt-7 text-sm font-medium text-green-700 rounded-lg border border-green-700 hover:text-white hover:bg-green-800"
+            >
+              Export
+            </button>
           </div>
         )}
-        <DataTablesReport data={displayData} headers={headersProducts} />
-        {/* Dialog Komposisi Produk (shadcn/ui) */}
-        <Dialog open={modalIngredients !== null} onOpenChange={open => !open && setModalIngredients(null)}>
-          <DialogContent>
-            <DialogTitle>Komposisi {modalProductName}</DialogTitle>
+
+        <hr />
+        
+        {/* Data table */}
+        {error ? (
+          <p className="p-4 text-red-500">{error.message}</p>
+        ) : (
+          <DataTablesReport
+            data={
+              products.map((item) => {
+                const { ingredients, ...rest } = item;
+                return {
+                  ...rest,
+                  price: formatCurrency(item.price),
+                  actions: (
+                    <button
+                      onClick={() =>
+                        setModalData({
+                          name: item.name,
+                          items: item.ingredients ?? [],
+                        })
+                      }
+                      className="px-2 py-1 text-xs text-black bg-white rounded border border-black hover:bg-gray-100"
+                    >
+                      Lihat Komposisi
+                    </button>
+                  ),
+                };
+              }) ?? []
+            }
+            headers={[
+              { label: "Nama", key: "name" },
+              { label: "Kategori", key: "category" },
+              { label: "Harga", key: "price" },
+              { label: "Stok", key: "stocks" },
+              { label: "Status", key: "status_barang" },
+              { label: "Komposisi", key: "actions" },
+            ]}
+            page={filters.page}
+            setPage={handleChangePage}
+            pages={pages}
+            total={total}
+            loading={isLoading}
+          />
+        )}
+
+        {/* Modal Ingredients */}
+        <Dialog open={!!modalData} onOpenChange={() => setModalData(null)}>
+          <DialogContent aria-describedby={undefined}>
+            <DialogTitle>Komposisi {modalData?.name}</DialogTitle>
             <ul className="overflow-y-auto mb-4 max-h-60">
-              {modalIngredients && modalIngredients.length > 0 ? (
-                modalIngredients.map((i, idx) => {
-                  // Prioritaskan data dari ingredient jika sudah ada, fallback ke managementStock
-                  const namaBarang = i.namaBarang || mockManagementStock.find(b => b.codeBarang === i.codeBarang)?.namaBarang;
-                  const satuan = i.satuan || mockManagementStock.find(b => b.codeBarang === i.codeBarang)?.satuan;
-                  return (
-                    <li key={idx} className="flex flex-col py-1 border-b border-gray-200 dark:border-neutral-700 sm:flex-row sm:justify-between">
-                      <span>
-                        {namaBarang ? (
-                          <>
-                            <span className="font-semibold">{namaBarang}</span>
-                            <span className="ml-2 text-xs text-gray-500">({i.codeBarang})</span>
-                          </>
-                        ) : (
-                          <span>Kode: {i.codeBarang}</span>
-                        )}
-                      </span>
-                      <span className="font-mono">Qty: {i.qty} {satuan || ''}</span>
-                    </li>
-                  );
-                })
+              {modalData?.items.length ? (
+                modalData.items.map((i, idx) => (
+                  <li
+                    key={idx}
+                    className="flex justify-between py-1 border-b border-gray-200 dark:border-neutral-700"
+                  >
+                    <span>{i.namaBarang}</span>
+                    <span className="font-mono">
+                      {i.qty} {i.satuan}
+                    </span>
+                  </li>
+                ))
               ) : (
                 <li className="text-gray-500">Tidak ada komposisi</li>
               )}
             </ul>
             <DialogClose asChild>
-              <button className="px-4 py-2 text-black bg-white rounded border border-black hover:bg-gray-100">Tutup</button>
+              <button className="px-4 py-2 text-black bg-white rounded border border-black hover:bg-gray-100">
+                Tutup
+              </button>
             </DialogClose>
           </DialogContent>
         </Dialog>
@@ -285,4 +214,4 @@ function ProductsPage() {
   );
 }
 
-export default withAuth(ProductsPage)
+export default withAuth(ProductsPage);

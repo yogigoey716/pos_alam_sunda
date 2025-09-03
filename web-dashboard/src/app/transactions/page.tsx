@@ -5,14 +5,15 @@ import { useRouter } from "next/navigation";
 import DataTablesReport from "@/components/tables/DataTablesReport";
 import WithAuth from "@/utils/withAuth";
 import Selects from "@/components/ui/selects";
-import useTransactions, { TransactionTable } from "@/hooks/useTransactions";
+import useTransactions from "@/hooks/useTransactions";
 import { optionsStatus, optionsIsPaid } from "@/constants/transactionsOptions";
 import Input from "@/components/ui/input";
-import * as XLSX from "xlsx";
+import { useExportExcel } from "@/services/utils/formatters";
 
 
 function TransactionsPage() {
   const router = useRouter();
+  const { exportToExcel } = useExportExcel();
 
   const [status, setStatus] = useState("");
   const [isPaid, setIsPaid] = useState("");
@@ -27,12 +28,8 @@ function TransactionsPage() {
     setIsOpen(!isOpen);
   };
 
-  const handleExportData = (transactions: TransactionTable[]) => {
-    if (!transactions || transactions.length === 0) return;
-    const ws = XLSX.utils.json_to_sheet(transactions);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Data Report Transactions");
-    XLSX.writeFile(wb, "data-report-transactions.xlsx");
+  const handleExport = () => {
+    exportToExcel(transactions, "transactions", "Transactions");
   };
 
   const onUnauthorized = useCallback(() => {
@@ -106,7 +103,7 @@ function TransactionsPage() {
               }}
             />
             <button
-              onClick={() => handleExportData(transactions)}
+              onClick={handleExport}
               type="button"
               className="px-3 py-2 mt-7 text-sm font-medium text-green-700 rounded-lg border border-green-700 hover:text-white hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800"
             >

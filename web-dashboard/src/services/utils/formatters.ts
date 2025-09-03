@@ -1,23 +1,21 @@
 import * as XLSX from "xlsx";
-import { Product } from "@/types/product";
 
-export const exportToExcel = (data: Product[], filename: string = "products") => {
-  const exportData = data.map(product => ({
-    "Nama Produk": product.name,
-    "Kategori": product.category,
-    "Stok": product.stock,
-    "Harga": `Rp ${product.price.toLocaleString()}`,
-    "Status": product.status,
-  }));
+export function useExportExcel<T extends object>() {
+  const exportToExcel = (data: T[], fileName: string, sheetName = "Sheet1") => {
+    if (!data || data.length === 0) return;
 
-  const ws = XLSX.utils.json_to_sheet(exportData);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Data Produk");
-  XLSX.writeFile(wb, `${filename}.xlsx`);
-};
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+    XLSX.writeFile(workbook, `${fileName}.xlsx`);
+  };
 
-export const formatPrice = (price: number): string => {
-  return `Rp ${price.toLocaleString()}`;
+  return { exportToExcel };
+}
+
+export const formatCurrency = (value?: number) => {
+  if (!value) return "Rp. 0";
+  return "Rp. " + Number(value).toLocaleString("id-ID");
 };
 
 export const getStatusColor = (status: string): string => {

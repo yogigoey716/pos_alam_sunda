@@ -1,4 +1,8 @@
+import { API_CONFIG } from "@/config/api";
+import { apiFetch } from "@/lib/api";
 import { Sales } from "@/types/sales";
+import { TransactionResponse, TransactionTable, UseTransactionsParams } from "@/types/transactions";
+import { formatCurrency } from "../utils/formatters";
 
 export const mockSales = [
     {
@@ -56,10 +60,55 @@ export const mockSales = [
 ]
 
 export const salesService = {
-    getAll: async (): Promise<Sales[]> => {
+    getAll: async ({
+        status,
+        isPaid,
+        search,
+        page,
+        size,
+        startDate,
+        endDate,
+    }: UseTransactionsParams): Promise<{
+        items: TransactionTable[];
+        total: number;
+        pages: number;
+        isLoading: boolean;
+        error: Error | null;
+    }> => {
         // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 100));
-        return mockSales;
+        const queryParams = new URLSearchParams({
+            ...(status && { status_filter: status }),
+            ...(isPaid && { category: isPaid }),
+            ...(search && { search }),
+            ...(startDate && { start_date: startDate }),
+            ...(endDate && { end_date: endDate }),
+            page: page.toString(),
+            size: size.toString(),
+        });
+        const response = await apiFetch(
+            API_CONFIG.ENDPOINTS.TRANSACTIONS + `?${queryParams.toString()}`,
+            {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            }
+        );
+
+        if(response.code !== 200){
+            throw new Error(response.detail || "Gagal memuat produk");
+        }
+
+        const data = response.data as TransactionResponse;
+        
+        const formattedTransactions: TransactionTable[] = data.items.map((item) => ({
+            ...item,
+            payment_methods: item.payment_methods?.description || "",
+            amount_paid: formatCurrency(item.amount_paid),
+            change: formatCurrency(item.change),
+            total_amount: formatCurrency(item.total_amount),
+            branch: item.branch?.description || "",
+        })); 
+        console.log(formattedTransactions);
+        return { items: formattedTransactions, total: data.total, pages: data.pages, isLoading: false, error: null };
     },
     
     getById: async (id: string): Promise<Sales | null> => {

@@ -3,7 +3,7 @@ import DataTablesReport from "@/components/tables/DataTablesReport";
 import Input from "@/components/ui/input";
 import * as XLSX from "xlsx";
 import { useSales, useSalesFilters } from "@/hooks/useSales";
-import { formatPrice } from "@/services/utils/formatters";
+import { formatCurrency } from "@/services/utils/formatters";
 import Selects from "@/components/ui/selects";
 import withAuth from "@/utils/withAuth";
 import { useState } from "react";
@@ -45,10 +45,10 @@ function SalesPage() {
 
     const datas = filteredSales.map(sale => ({
         ...sale,
-        totalPenjualan: formatPrice(sale.totalPenjualan),
-        diskon: formatPrice(sale.diskon),
-        pajak: formatPrice(sale.pajak),
-        grandTotal: formatPrice(sale.grandTotal),
+        totalPenjualan: formatCurrency(sale.totalPenjualan),
+        diskon: formatCurrency(sale.diskon),
+        pajak: formatCurrency(sale.pajak),
+        grandTotal: formatCurrency(sale.grandTotal),
         cabang: sale.cabang,
     }))
 

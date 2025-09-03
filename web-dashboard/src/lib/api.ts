@@ -1,7 +1,5 @@
 import { getToken } from "./auth";
-import { API_CONFIG } from "@/config/api";
-
-const BASE_URL = API_CONFIG.BASE_URL;
+import { BASE_URL } from "@/config/api";
 
 export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
   const token = getToken();
@@ -11,7 +9,7 @@ export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
     headers: {
       "Content-Type": "application/json",
       "ngrok-skip-browser-warning": "true",
-      "token": token || "",   // sesuai requirement user (bukan Bearer)
+      "token": token || "",
       ...options.headers,
     },
   });

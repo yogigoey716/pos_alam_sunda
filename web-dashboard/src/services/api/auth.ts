@@ -41,23 +41,12 @@ export const loginApi = async (credentials: LoginCredentials): Promise<LoginResp
     body: JSON.stringify(credentials),
   });
 
-  let data;
-  try {
-    data = await response.json();
-  } catch {
-    data = {};
-  }
-
   if (!response.ok) {
-    console.error("Backend login error:", {
-      status: response.status,
-      statusText: response.statusText,
-      data
-    });
-    throw new Error(data?.message || data?.backend?.message || `Login failed with status ${response.status}`);
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData?.message || "Login failed");
   }
 
-  return data;
+  return response.json();
 };
 
 // Logout API call to backend (if backend has logout endpoint)

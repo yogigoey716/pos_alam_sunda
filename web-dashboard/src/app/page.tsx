@@ -19,6 +19,7 @@ import Selects from "@/components/ui/selects";
 import { useState, useEffect } from "react";
 import withAuth from "@/utils/withAuth";
 import { apiFetch } from "@/lib/api";
+import { API_CONFIG } from "@/config/api";
 type BranchKey = "all" | "bogor" | "depok";
 
 interface TransactionItem {
@@ -53,7 +54,7 @@ function Home() {
   useEffect(() => {
     const fetchTotalSales = async () => {
       try {
-        const response = await apiFetch("/transactions/transactions", {
+        const response = await apiFetch(API_CONFIG.ENDPOINTS.TRANSACTIONS, {
           method: "GET",
           headers: { "Content-Type": "application/json"},
         });

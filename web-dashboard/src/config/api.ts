@@ -1,16 +1,18 @@
 // API Configuration
+export const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL + '/new-pos-api';
 export const API_CONFIG = {
-  BASE_URL: 'https://e406178f95ec.ngrok-free.app/new-pos-api',
   ENDPOINTS: {
     LOGIN: '/login/auth',
-    LOGOUT: '/logout',
+    LOGOUT: '/login/logout',
     TRANSACTIONS: '/transactions/transactions',
-    PRODUCTS: '/products',
+    PRODUCTS: '/product/all-products',
+    CREATE_PRODUCT: '/product/create-product',
+    MS_KATEGORI: '/category/all-categories',
     // Add more endpoints as needed
   },
 };
 
 // Helper function to build full URL
 export const buildApiUrl = (endpoint: string) => {
-  return `${API_CONFIG.BASE_URL}${endpoint}`;
+  return `${BASE_URL}${endpoint}`;
 };

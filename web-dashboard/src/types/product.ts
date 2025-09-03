@@ -5,32 +5,74 @@ export interface ProductIngredient {
   satuan?: string; // opsional, hasil lookup untuk UI
 }
 
-export interface Product {
-  id?: string;
+interface Satuan{
+  id: string;
   name: string;
-  category: string;
-  stock: number;
-  price: number;
-  status: ProductStatus;
-  ingredients?: ProductIngredient[]; // komposisi bahan baku
-  // UI / computed fields
-  margin?: number;
-  hpp?: number;
-  trend?: number;
-  laba?: number;
+  description: string;
 }
 
-export type ProductStatus = 'Tersedia' | 'Stok Rendah' | 'Habis';
-
-export interface ProductFormData {
-  name: string;
-  category: string;
-  stock: number;
-  price: number;
+interface Ingredient {
+  id: string;
+  description: string;
+  satuan: Satuan;
 }
 
-export interface ProductFilters {
+export interface ApiProductIngredient {
+  id: string;
+  ingredient: Ingredient;
+  satuan: Satuan;
+  qty: number;
+}
+
+interface Category {
+  id: string;
+  name: string;
+  description: string;
+}
+
+interface Product {
+  id: string;
+  name: string;
+  category?: Category;
+  stocks: number;
+  price: number;
+  ingredients: ApiProductIngredient[];
+  status_barang: string;
+}
+
+export interface ProductResponse {
+  total: number;
+  pages: number;
+  items: Product[];
+}
+
+export interface ProductTable {
+  id: string;
+  name: string;
+  price: number;
+  stocks: string;
   category: string;
-  searchTerm: string;
-  status?: ProductStatus;
+  status_barang: string;
+  ingredients?: ProductIngredient[];
+}
+
+export interface UseProductsParams {
+  status: string;
+  cate: string;
+  search: string;
+  page: number;
+  size: number;
+  startDate: string;
+  endDate: string;
+  onUnauthorized?: () => void;
+}
+
+export interface RequestBodyProduct{
+    name: string;
+    description: string;
+    stocks: string;
+    price: number;
+    barcode: string;
+    status_barang: string;
+    category_id: string;
 }

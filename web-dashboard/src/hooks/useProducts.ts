@@ -1,70 +1,57 @@
-import { useState, useEffect } from 'react';
-import { Product, ProductFilters } from '@/types/product';
-import { productService } from '@/services/api/products';
+"use client";
 
-export const useProducts = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+import { useEffect, useState } from "react";
+import { productsApi } from "@/services/api/products";
+import { ProductTable, UseProductsParams } from "@/types/product";
 
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await productService.getAll();
-      setProducts(data);
-    } catch (err) {
-      setError('Failed to fetch products');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+export default function useProducts(params: UseProductsParams) {
+  const [products, setProducts] = useState<ProductTable[]>([]);
+  const [total, setTotal] = useState(0);
+  const [pages, setPages] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    let isMounted = true;
+    setIsLoading(true);
+    setError(null);
 
-  return {
-    products,
-    loading,
-    error,
-    refetch: fetchProducts
-  };
-};
+    productsApi
+      .getAll(params)
+      .then((res) => {
+        if (!isMounted) return;
 
-export const useProductFilters = (products: Product[]) => {
-  const [filters, setFilters] = useState<ProductFilters>({
-    category: 'all',
-    searchTerm: ''
-  });
+        setProducts(res.items);
+        setTotal(res.total);
+        setPages(res.pages);
+      })
+      .catch((err) => {
+        if (!isMounted) return;
 
-  const filteredProducts = products.filter(product => {
-    if (filters.category !== 'all' && 
-        product.category.toLowerCase() !== filters.category.toLowerCase()) {
-      return false;
-    }
+        if (err.response?.status === 401 && params.onUnauthorized) {
+          params.onUnauthorized();
+        }
+        setError(err);
+      })
+      .finally(() => {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      });
 
-    // Filter by search term
-    if (filters.searchTerm) {
-      const searchLower = filters.searchTerm.toLowerCase();
-      return (
-        product.name.toLowerCase().includes(searchLower) ||
-        product.category.toLowerCase().includes(searchLower)
-      );
-    }
+    return () => {
+      isMounted = false;
+    };
+  }, [
+    params.status,
+    params.cate,
+    params.search,
+    params.page,
+    params.size,
+    params.startDate,
+    params.endDate,
+    params.onUnauthorized,
+  ]);
 
-    return true;
-  });
-
-  const updateFilter = (key: keyof ProductFilters, value: string) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
-  };
-
-  return {
-    filters,
-    filteredProducts,
-    updateFilter,
-    setFilters
-  };
-};
+  return { products, total, pages, isLoading, error };
+}
