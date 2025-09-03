@@ -53,7 +53,7 @@ function Home() {
   useEffect(() => {
     const fetchTotalSales = async () => {
       try {
-        const response = await apiFetch("/new-pos-api/transactions/transactions", {
+        const response = await apiFetch("/transactions/transactions", {
           method: "GET",
           headers: { "Content-Type": "application/json"},
         });
