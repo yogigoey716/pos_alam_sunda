@@ -1,8 +1,23 @@
+// For legacy/mock data compatibility
 export interface ProductIngredient {
-  codeBarang: string; // kode bahan baku
+  id: string; // kode bahan baku
+  name: string; // nama bahan baku
   qty: number; // jumlah yang digunakan per produk
-  namaBarang?: string; // opsional, hasil lookup untuk UI
-  satuan?: string; // opsional, hasil lookup untuk UI
+  satuan: string; // satuan bahan baku
+}
+
+export interface ProductDummy {
+  id: string;
+  name: string;
+  category: string;
+  stock: number;
+  price: number;
+  status: string;
+  ingredients?: ProductIngredient[];
+  margin?: number;
+  hpp?: number;
+  trend?: number;
+  laba?: number;
 }
 
 interface Satuan{

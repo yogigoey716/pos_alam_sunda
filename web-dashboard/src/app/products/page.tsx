@@ -193,9 +193,9 @@ function ProductsPage() {
                     key={idx}
                     className="flex justify-between py-1 border-b border-gray-200 dark:border-neutral-700"
                   >
-                    <span>{i.namaBarang}</span>
+                    <span>{i.name}</span>
                     <span className="font-mono">
-                      Qty : {i.stock} {i.satuan}
+                      Qty : {i.qty} {i.satuan}
                     </span>
                   </li>
                 ))

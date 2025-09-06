@@ -13,8 +13,8 @@ export const mockProducts: ProductDummy[] = [
     price: 25000,
     status: "Tersedia",
     ingredients: [
-      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-001"); return { codeBarang: "BHN-001", stock: 0.15, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
-      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-002"); return { codeBarang: "BHN-002", stock: 0.2, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
+      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-001"); return { id: "BHN-001", name: b?.namaBarang || "", qty: 0.15, satuan: b?.satuan || "" }; })(),
+      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-002"); return { id: "BHN-002", name: b?.namaBarang || "", qty: 0.2, satuan: b?.satuan || "" }; })(),
     ],
   },
   {
@@ -25,9 +25,9 @@ export const mockProducts: ProductDummy[] = [
     price: 6000,
     status: "Tersedia",
     ingredients: [
-      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-003"); return { codeBarang: "BHN-003", stock: 0.05, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
-      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-006"); return { codeBarang: "BHN-006", stock: 0.02, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
-      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-007"); return { codeBarang: "BHN-007", stock: 0.1, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
+      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-003"); return { id: "BHN-003", name: b?.namaBarang || "", qty: 0.05, satuan: b?.satuan || "" }; })(),
+      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-006"); return { id: "BHN-006", name: b?.namaBarang || "", qty: 0.02, satuan: b?.satuan || "" }; })(),
+      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-007"); return { id: "BHN-007", name: b?.namaBarang || "", qty: 0.1, satuan: b?.satuan || "" }; })(),
     ],
   },
   {
@@ -38,9 +38,9 @@ export const mockProducts: ProductDummy[] = [
     price: 15000,
     status: "Tersedia",
     ingredients: [
-      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-004"); return { codeBarang: "BHN-004", stock: 0.02, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
-      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-006"); return { codeBarang: "BHN-006", stock: 0.02, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
-      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-007"); return { codeBarang: "BHN-007", stock: 0.1, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
+      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-004"); return { id: "BHN-004", name: b?.namaBarang || "", qty: 0.02, satuan: b?.satuan || "" }; })(),
+      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-006"); return { id: "BHN-006", name: b?.namaBarang || "", qty: 0.02, satuan: b?.satuan || "" }; })(),
+      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-007"); return { id: "BHN-007", name: b?.namaBarang || "", qty: 0.1, satuan: b?.satuan || "" }; })(),
     ],
   },
   {
@@ -51,7 +51,7 @@ export const mockProducts: ProductDummy[] = [
     price: 30000,
     status: "Tersedia",
     ingredients: [
-      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-005"); return { codeBarang: "BHN-005", stock: 10, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
+      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-005"); return { id: "BHN-005", name: b?.namaBarang || "", qty: 10, satuan: b?.satuan || "" }; })(),
     ],
   },
   {
@@ -62,8 +62,8 @@ export const mockProducts: ProductDummy[] = [
     price: 20000,
     status: "Tersedia",
     ingredients: [
-      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-001"); return { codeBarang: "BHN-001", stock: 0.1, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
-      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-002"); return { codeBarang: "BHN-002", stock: 0.15, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
+      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-001"); return { id: "BHN-001", name: b?.namaBarang || "", qty: 0.1, satuan: b?.satuan || "" }; })(),
+      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-002"); return { id: "BHN-002", name: b?.namaBarang || "", qty: 0.15, satuan: b?.satuan || "" }; })(),
     ],
   },
   {
@@ -84,8 +84,8 @@ export const mockProducts: ProductDummy[] = [
     price: 8000,
     status: "Stok Rendah",
     ingredients: [
-      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-003"); return { codeBarang: "BHN-003", stock: 0.05, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
-      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-007"); return { codeBarang: "BHN-007", stock: 0.1, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
+      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-003"); return { id: "BHN-003", name: b?.namaBarang || "", qty: 0.05, satuan: b?.satuan || "" }; })(),
+      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-007"); return { id: "BHN-007", name: b?.namaBarang || "", qty: 0.1, satuan: b?.satuan || "" }; })(),
     ],
   },
   {
@@ -116,7 +116,7 @@ export const mockProducts: ProductDummy[] = [
     price: 28000,
     status: "Stok Rendah",
     ingredients: [
-      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-001"); return { codeBarang: "BHN-001", stock: 0.2, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
+      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-001"); return { id: "BHN-001", name: b?.namaBarang || "", qty: 0.2, satuan: b?.satuan || "" }; })(),
     ],
   },
 ];
@@ -178,10 +178,10 @@ export const productsApi = {
         category: item.category?.description ?? "-",
         status_barang: item.status_barang,
         ingredients: item.ingredients?.map((ing) => ({
-          codeBarang: ing.id,
-          namaBarang: ing.description,
-          stock: ing.stock,
-          satuan: ing.satuan ? ing.satuan.name : "",
+          id: ing.id,
+          name: ing.ingredient?.description || "",
+          qty: ing.qty,
+          satuan: ing.satuan?.name || "",
         })),
       }));
       console.log(dataProduct);
