@@ -2,21 +2,14 @@
 
 import { useState, useCallback } from "react";
 import withAuth from "@/utils/withAuth";
-import useProducts from "@/hooks/useProducts";
+import useProductIngredients from "@/hooks/useProductIngredients";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Selects from "@/components/ui/selects";
 import Input from "@/components/ui/input";
 import { optionsCategory, optionsStatus } from "@/constants/productsOptions";
 import DataTablesReport from "@/components/tables/DataTablesReport";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogClose,
-} from "@/components/ui/dialog";
-import { ProductIngredient } from "@/types/product";
-import { formatCurrency, useExportExcel } from "@/services/utils/formatters";
+import { useExportExcel } from "@/services/utils/formatters";
 
 function ProductsPage() {
   const router = useRouter();
@@ -34,11 +27,6 @@ function ProductsPage() {
 
   const [showFilter, setShowFilter] = useState(false);
 
-  const [modalData, setModalData] = useState<{
-    name: string;
-    items: ProductIngredient[];
-  } | null>(null);
-
   const handleChangeFilter = (
     key: keyof typeof filters,
     value: string | number
@@ -47,7 +35,7 @@ function ProductsPage() {
   };
 
   const handleExport = () => {
-    exportToExcel(products, "products", "Products");
+    exportToExcel(productsIngredients, "productsIngredients", "ProductsIngredients");
   };
 
   const handleChangePage = (newPage: number) => {
@@ -58,7 +46,7 @@ function ProductsPage() {
     router.push("/login");
   }, [router]);
 
-  const { products, total, pages, isLoading, error } = useProducts({
+  const { productsIngredients, total, pages, isLoading, error } = useProductIngredients({
     ...filters,
     onUnauthorized,
   });
@@ -67,9 +55,9 @@ function ProductsPage() {
     <div className="w-full">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="mb-2 text-3xl font-bold tracking-tight">Produk</h1>
+        <h1 className="mb-2 text-3xl font-bold tracking-tight">Produk Bahan</h1>
         <p className="text-base text-gray-500 dark:text-gray-400">
-          Kelola semua produk dalam sistem Anda
+          Kelola semua produk bahan dalam sistem Anda
         </p>
       </div>
 
@@ -144,35 +132,21 @@ function ProductsPage() {
         ) : (
           <DataTablesReport
             data={
-              products.map((item) => {
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const { ingredients, ...rest } = item;
-                return {
-                  ...rest,
-                  price: formatCurrency(item.price),
-                  actions: (
-                    <button
-                      onClick={() =>
-                        setModalData({
-                          name: item.name,
-                          items: item.ingredients ?? [],
-                        })
-                      }
-                      className="px-2 py-1 text-xs text-black bg-white rounded border border-black hover:bg-gray-100"
-                    >
-                      Lihat Komposisi
-                    </button>
-                  ),
-                };
-              }) ?? []
+                productsIngredients.map((item) => ({
+                    id: item.id,
+                    nameProduct: item.nameProduct,
+                    nameIngredients: item.nameIngredients,
+                    qtyIngredients: item.qty,
+                    ingredientId: item.ingredientId,
+                    productId: item.productId,
+                    satuan: item.satuan,
+                }))
             }
             headers={[
-              { label: "Nama", key: "name" },
-              { label: "Kategori", key: "category" },
-              { label: "Harga", key: "price" },
-              { label: "Stok", key: "stocks" },
-              { label: "Status", key: "status_barang" },
-              { label: "Komposisi", key: "actions" },
+              { label: "Nama Product", key: "nameProduct" },
+              { label: "Nama Bahan", key: "nameIngredients" },
+              { label: "Jumlah Bahan", key: "qtyIngredients" },
+              { label: "Satuan", key: "satuan" },
             ]}
             page={filters.page}
             setPage={handleChangePage}
@@ -181,35 +155,6 @@ function ProductsPage() {
             loading={isLoading}
           />
         )}
-
-        {/* Modal Ingredients */}
-        <Dialog open={!!modalData} onOpenChange={() => setModalData(null)}>
-          <DialogContent aria-describedby={undefined}>
-            <DialogTitle>Komposisi {modalData?.name}</DialogTitle>
-            <ul className="overflow-y-auto mb-4 max-h-60">
-              {modalData?.items.length ? (
-                modalData.items.map((i, idx) => (
-                  <li
-                    key={idx}
-                    className="flex justify-between py-1 border-b border-gray-200 dark:border-neutral-700"
-                  >
-                    <span>{i.namaBarang}</span>
-                    <span className="font-mono">
-                      Qty : {i.stock} {i.satuan}
-                    </span>
-                  </li>
-                ))
-              ) : (
-                <li className="text-gray-500">Tidak ada komposisi</li>
-              )}
-            </ul>
-            <DialogClose asChild>
-              <button className="px-4 py-2 text-black bg-white rounded border border-black hover:bg-gray-100">
-                Tutup
-              </button>
-            </DialogClose>
-          </DialogContent>
-        </Dialog>
       </div>
     </div>
   );

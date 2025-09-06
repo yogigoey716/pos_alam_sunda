@@ -9,6 +9,8 @@ interface Satuan{
   id: string;
   name: string;
   description: string;
+
+  price: number; // harga satuan bahan baku
 }
 
 interface Ingredient {

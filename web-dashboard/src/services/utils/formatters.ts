@@ -13,13 +13,10 @@ export function useExportExcel<T extends object>() {
   return { exportToExcel };
 }
 
-
 export const formatCurrency = (value?: number) => {
   if (!value) return "Rp. 0";
   return "Rp. " + Number(value).toLocaleString("id-ID");
 };
-
-export const formatPrice = formatCurrency;
 
 export const getStatusColor = (status: string): string => {
   switch (status) {

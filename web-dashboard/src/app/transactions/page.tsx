@@ -17,9 +17,9 @@ function TransactionsPage() {
 
   const [status, setStatus] = useState("");
   const [isPaid, setIsPaid] = useState("");
-  const [search, setSearch] = useState("");
+  const [search] = useState("");
   const [page, setPage] = useState(1);
-  const [size, setSize] = useState(10);
+  const [size] = useState(10);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [isOpen, setIsOpen] = useState(false);

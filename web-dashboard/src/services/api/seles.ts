@@ -60,6 +60,10 @@ export const mockSales = [
 ]
 
 export const salesService = {
+    getAllDataDummy: async (): Promise<Sales[]> => {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        return mockSales;
+    },
     getAll: async ({
         status,
         isPaid,

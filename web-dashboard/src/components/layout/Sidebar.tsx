@@ -6,6 +6,7 @@ const menu = [
   { label: "Dashboard", icon: <Home className="w-5 h-5" />, href: "/" },
   { label: "Penjualan", icon: <BarChart2 className="w-5 h-5" />, href: "/sales" },
   { label: "Produk", icon: <ShoppingBag className="w-5 h-5" />, href: "/products" },
+  { label: "Produk Bahan", icon: <ShoppingBag className="w-5 h-5" />, href: "/products-ingredients" },
   { label: "Management Stock", icon: <Box className="w-5 h-5" />, href: "/management-stock" },
   { label: "Transaksi", icon: <Box className="w-5 h-5" />, href: "/transactions" },
 ];

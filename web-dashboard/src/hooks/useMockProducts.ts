@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Product } from '@/types/product';
+import { ProductDummy } from '@/types/product';
 import { productServiceMock } from '@/services/mock/products';
 
 export const useMockProducts = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<ProductDummy[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { productsApi } from "@/services/api/products";
-import { ProductTable, UseProductsParams } from "@/types/product";
+import { productIngredientsApi } from "@/services/api/productIngredients";
+import { IngredientTable, UseIngredientParams } from "@/types/productIngredients";
 
-export default function useProducts(params: UseProductsParams) {
-  const [products, setProducts] = useState<ProductTable[]>([]);
+export default function useProductIngredients(params: UseIngredientParams) {
+  const [productsIngredients, setProductsIngredients] = useState<IngredientTable[]>([]);
   const [total, setTotal] = useState(0);
   const [pages, setPages] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -16,12 +16,12 @@ export default function useProducts(params: UseProductsParams) {
     setIsLoading(true);
     setError(null);
 
-    productsApi
+    productIngredientsApi
       .getAll(params)
       .then((res) => {
         if (!isMounted) return;
 
-        setProducts(res.items);
+        setProductsIngredients(res.items);
         setTotal(res.total);
         setPages(res.pages);
       })
@@ -54,5 +54,5 @@ export default function useProducts(params: UseProductsParams) {
     params.onUnauthorized,
   ]);
 
-  return { products, total, pages, isLoading, error };
+  return { productsIngredients, total, pages, isLoading, error };
 }

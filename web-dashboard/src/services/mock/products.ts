@@ -1,28 +1,28 @@
-import { Product } from '@/types/product';
+import { ProductDummy } from '@/types/product';
 import { mockProducts } from '../api/products';
 
 const delay = (ms = 300) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const productServiceMock = {
-  async getAll(): Promise<Product[]> {
+  async getAll(): Promise<ProductDummy[]> {
     await delay(300);
     return [...mockProducts];
   },
-  async getById(id: string): Promise<Product | undefined> {
+  async getById(id: string): Promise<ProductDummy | undefined> {
     await delay(200);
     return mockProducts.find(p => p.id === id);
   },
-  async create(payload: Partial<Product>): Promise<Product> {
+  async create(payload: Partial<ProductDummy>): Promise<ProductDummy> {
     await delay(200);
-    const newP: Product = { ...(payload as Product), id: `p${Date.now()}` };
+    const newP: ProductDummy = { ...(payload as ProductDummy), id: `p${Date.now()}` };
     mockProducts.unshift(newP);
     return newP;
   },
-  async update(id: string, payload: Partial<Product>): Promise<Product | undefined> {
+  async update(id: string, payload: Partial<ProductDummy>): Promise<ProductDummy | undefined> {
     await delay(200);
     const idx = mockProducts.findIndex(p => p.id === id);
     if (idx === -1) return undefined;
-    mockProducts[idx] = { ...mockProducts[idx], ...(payload as Product) };
+    mockProducts[idx] = { ...mockProducts[idx], ...(payload as ProductDummy) };
     return mockProducts[idx];
   },
   async delete(id: string): Promise<boolean> {

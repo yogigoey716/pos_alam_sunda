@@ -1,6 +1,6 @@
-import { Product } from "@/types/product";
+import { ProductDummy } from "@/types/product";
 
-export const mockProducts: Product[] = [
+export const mockProducts: ProductDummy[] = [
   { id: "p1", name: "Sate Maranggi", category: "makanan", stock: 20, price: 25000, status: "Tersedia", margin: 44.0, hpp: 14000, trend: 8, laba: 11000 },
   { id: "p2", name: "Nasi Ayam Kremes", category: "makanan", stock: 12, price: 22000, status: "Tersedia", margin: 69.1, hpp: 6804, trend: -3, laba: 15196 },
   { id: "p3", name: "Teh", category: "minuman", stock: 50, price: 5000, status: "Tersedia", margin: 91.6, hpp: 420.2, trend: 2, laba: 4579.8 },

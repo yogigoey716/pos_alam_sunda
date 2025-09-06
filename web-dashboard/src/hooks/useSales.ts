@@ -14,7 +14,7 @@ export const useSales = () => {
         try {
             setLoading(true);
             setError(null);
-            const data = await salesService.getAll();
+            const data = await salesService.getAllDataDummy();
             setSales(data);
         } catch (err) {
             setError('Failed to fetch sales');

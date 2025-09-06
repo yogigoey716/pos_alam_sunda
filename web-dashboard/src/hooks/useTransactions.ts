@@ -1,11 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { apiFetch } from "@/lib/api";
-import { formatCurrency } from "@/services/utils/formatters";
-import { TransactionResponse, TransactionTable, UseTransactionsParams } from "@/types/transactions";
-import { API_CONFIG } from "@/config/api";
 import { salesService } from "@/services/api/seles";
+import { UseTransactionsParams } from "@/types/transactions";
+import { TransactionTable } from "@/types/transactions";
 
 
 
@@ -47,6 +45,7 @@ export default function useTransactions(params: UseTransactionsParams) {
     return () => {
       isMounted = false;
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.status, params.isPaid, params.page, params.size, params.search, params.startDate, params.endDate, params.onUnauthorized]);
 
   return { transactions, total, pages, isLoading, error };

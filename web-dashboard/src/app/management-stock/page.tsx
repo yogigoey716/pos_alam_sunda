@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useManagementStock, useManagementStockFilters } from "@/hooks/useManagementStock";
 import Input from "@/components/ui/input";
 import * as XLSX from "xlsx";
-import { formatPrice } from "@/services/utils/formatters";
+import { formatCurrency } from "@/services/utils/formatters";
 
 import {
     Dialog,
@@ -65,8 +65,8 @@ function ManagementStockPage() {
             stockMasuk: managementStock.stockMasuk,
             stockKeluar: managementStock.stockKeluar,
             sisaStock: managementStock.sisaStock,
-            hargaSatuan: formatPrice(managementStock.hargaSatuan),
-            nilaiPersediaan: formatPrice(managementStock.nilaiPersediaan),
+            hargaSatuan: formatCurrency(managementStock.hargaSatuan),
+            nilaiPersediaan: formatCurrency(managementStock.nilaiPersediaan),
             branchesSummary: (
                 <>
                     {summary}

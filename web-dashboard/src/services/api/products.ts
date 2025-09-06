@@ -1,126 +1,124 @@
 import { apiFetch } from '@/lib/api';
-import { mockManagementStock } from '@/services/api/managementStock';
 import { API_CONFIG } from '@/config/api';
-import { ProductResponse, ProductTable, RequestBodyProduct, UseProductsParams } from '@/types/product';
-import { error } from 'console';
-import { formatCurrency } from '../utils/formatters';
+import { ProductDummy, ProductResponse, ProductTable, RequestBodyProduct, UseProductsParams } from '@/types/product';
+import { mockManagementStock } from './managementStock';
 
 // Mock data - will be replaced with real API calls
-export const mockProducts: ProductTable[] = [
-  // {
-  //   id: '1',
-  //   name: "Nasi Ayam Kremes",
-  //   category: "Makanan",
-  //   stocks: "50",
-  //   price: 25000,
-  //   status_barang: "Tersedia",
-  //   ingredients: [
-  //     (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-001"); return { codeBarang: "BHN-001", qty: 0.15, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
-  //     (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-002"); return { codeBarang: "BHN-002", qty: 0.2, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
-  //   ],
-  // },
-  // {
-  //   id: '2',
-  //   name: "Teh Manis Dingin",
-  //   category: "Minuman", 
-  //   stocks: "70",
-  //   price: 6000,
-  //   status_barang: "Tersedia",
-  //   ingredients: [
-  //     (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-003"); return { codeBarang: "BHN-003", qty: 0.05, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
-  //     (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-006"); return { codeBarang: "BHN-006", qty: 0.02, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
-  //     (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-007"); return { codeBarang: "BHN-007", qty: 0.1, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
-  //   ],
-  // },
-  // {
-  //   id: '3',
-  //   name: "Es Kopi Susu",
-  //   category: "Minuman",
-  //   stocks: "30",
-  //   price: 15000,
-  //   status_barang: "Tersedia",
-  //   ingredients: [
-  //     (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-004"); return { codeBarang: "BHN-004", qty: 0.02, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
-  //     (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-006"); return { codeBarang: "BHN-006", qty: 0.02, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
-  //     (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-007"); return { codeBarang: "BHN-007", qty: 0.1, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
-  //   ],
-  // },
-  // {
-  //   id: '4',
-  //   name: "Sate Maranggi",
-  //   category: "Makanan",
-  //   stocks: "80",
-  //   price: 30000,
-  //   status_barang: "Tersedia",
-  //   ingredients: [
-  //     (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-005"); return { codeBarang: "BHN-005", qty: 10, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
-  //   ],
-  // },
-  // {
-  //   id: '5',
-  //   name: "Soto Ayam",
-  //   category: "Makanan",
-  //   stocks: "40",
-  //   price: 20000,
-  //   status_barang: "Tersedia",
-  //   ingredients: [
-  //     (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-001"); return { codeBarang: "BHN-001", qty: 0.1, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
-  //     (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-002"); return { codeBarang: "BHN-002", qty: 0.15, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
-  //   ],
-  // },
-  // {
-  //   id: '6',
-  //   name: "Jus Jeruk",
-  //   category: "Minuman",
-  //   stocks: "25",
-  //   price: 12000,
-  //   status_barang: "Tersedia",
-  //   ingredients: [],
-  //   // ingredients intentionally left empty for demo
-  // },
-  // {
-  //   id: '7',
-  //   name: "Lemon Tea",
-  //   category: "Minuman",
-  //   stocks: "15",
-  //   price: 8000,
-  //   status_barang: "Stok Rendah",
-  //   ingredients: [
-  //     (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-003"); return { codeBarang: "BHN-003", qty: 0.05, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
-  //     (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-007"); return { codeBarang: "BHN-007", qty: 0.1, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
-  //   ],
-  // },
-  // {
-  //   id: '8',
-  //   name: "Mie Goreng",
-  //   category: "Makanan",
-  //   stocks: "10",
-  //   price: 18000,
-  //   status_barang: "Stok Rendah",
-  //   ingredients: [],
-  //   // ingredients intentionally left empty for demo
-  // },
-  // {
-  //   id: '9',
-  //   name: "Nasi Goreng",
-  //   category: "Makanan",
-  //   stocks: "0",
-  //   price: 22000,
-  //   status_barang: "Habis",
-  //   ingredients: [],
-  //   // ingredients intentionally left empty for demo
-  // },
-  // {
-  //   id: '10',
-  //   name: "Ayam Bakar",
-  //   category: "Makanan",
-  //   stocks: "5",
-  //   price: 28000,
-  //   status_barang: "Stok Rendah",
-  //   ingredients: [
-  //     (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-001"); return { codeBarang: "BHN-001", qty: 0.2, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
-  //   ],
-  // },
+export const mockProducts: ProductDummy[] = [
+  {
+    id: '1',
+    name: "Nasi Ayam Kremes",
+    category: "Makanan",
+    stock: 50,
+    price: 25000,
+    status: "Tersedia",
+    ingredients: [
+      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-001"); return { codeBarang: "BHN-001", stock: 0.15, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
+      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-002"); return { codeBarang: "BHN-002", stock: 0.2, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
+    ],
+  },
+  {
+    id: '2',
+    name: "Teh Manis Dingin",
+    category: "Minuman", 
+    stock: 70,
+    price: 6000,
+    status: "Tersedia",
+    ingredients: [
+      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-003"); return { codeBarang: "BHN-003", stock: 0.05, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
+      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-006"); return { codeBarang: "BHN-006", stock: 0.02, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
+      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-007"); return { codeBarang: "BHN-007", stock: 0.1, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
+    ],
+  },
+  {
+    id: '3',
+    name: "Es Kopi Susu",
+    category: "Minuman",
+    stock: 30,
+    price: 15000,
+    status: "Tersedia",
+    ingredients: [
+      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-004"); return { codeBarang: "BHN-004", stock: 0.02, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
+      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-006"); return { codeBarang: "BHN-006", stock: 0.02, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
+      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-007"); return { codeBarang: "BHN-007", stock: 0.1, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
+    ],
+  },
+  {
+    id: '4',
+    name: "Sate Maranggi",
+    category: "Makanan",
+    stock:  80,
+    price: 30000,
+    status: "Tersedia",
+    ingredients: [
+      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-005"); return { codeBarang: "BHN-005", stock: 10, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
+    ],
+  },
+  {
+    id: '5',
+    name: "Soto Ayam",
+    category: "Makanan",
+    stock: 40,
+    price: 20000,
+    status: "Tersedia",
+    ingredients: [
+      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-001"); return { codeBarang: "BHN-001", stock: 0.1, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
+      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-002"); return { codeBarang: "BHN-002", stock: 0.15, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
+    ],
+  },
+  {
+    id: '6',
+    name: "Jus Jeruk",
+    category: "Minuman",
+    stock: 25,
+    price: 12000,
+    status: "Tersedia",
+    ingredients: [],
+    // ingredients intentionally left empty for demo
+  },
+  {
+    id: '7',
+    name: "Lemon Tea",
+    category: "Minuman",
+    stock: 15,
+    price: 8000,
+    status: "Stok Rendah",
+    ingredients: [
+      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-003"); return { codeBarang: "BHN-003", stock: 0.05, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
+      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-007"); return { codeBarang: "BHN-007", stock: 0.1, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
+    ],
+  },
+  {
+    id: '8',
+    name: "Mie Goreng",
+    category: "Makanan",
+    stock: 10,
+    price: 18000,
+    status: "Stok Rendah",
+    ingredients: [],
+    // ingredients intentionally left empty for demo
+  },
+  {
+    id: '9',
+    name: "Nasi Goreng",
+    category: "Makanan",
+    stock: 0,
+    price: 22000,
+    status: "Habis",
+    ingredients: [],
+    // ingredients intentionally left empty for demo
+  },
+  {
+    id: '10',
+    name: "Ayam Bakar",
+    category: "Makanan",
+    stock: 5,
+    price: 28000,
+    status: "Stok Rendah",
+    ingredients: [
+      (() => { const b = mockManagementStock.find(x => x.codeBarang === "BHN-001"); return { codeBarang: "BHN-001", stock: 0.2, namaBarang: b?.namaBarang, satuan: b?.satuan }; })(),
+    ],
+  },
 ];
 
 // Real API functions (to replace mock data)
@@ -179,11 +177,11 @@ export const productsApi = {
         stocks: item.stocks.toString(),
         category: item.category?.description ?? "-",
         status_barang: item.status_barang,
-        ingredients: item.ingredients.map((ing) => ({
+        ingredients: item.ingredients?.map((ing) => ({
           codeBarang: ing.id,
-          namaBarang: ing.ingredient.description,
-          qty: ing.qty,
-          satuan: ing.ingredient.satuan ? ing.ingredient.satuan.name : "",
+          namaBarang: ing.description,
+          stock: ing.stock,
+          satuan: ing.satuan ? ing.satuan.name : "",
         })),
       }));
       console.log(dataProduct);
@@ -208,7 +206,7 @@ export const productsApi = {
       return response.data;
     } catch {
       // Fallback to mock data
-      return mockProducts.find(p => p.id === id) || null;
+      return null;
     }
   },
   
