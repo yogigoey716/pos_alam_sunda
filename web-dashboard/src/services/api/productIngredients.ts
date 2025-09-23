@@ -1,6 +1,6 @@
 import { API_CONFIG } from "@/config/api";
 import { apiFetch } from "@/lib/api";
-import { IngredientResponse, IngredientTable, RequestBodyIngredient, UseIngredientParams } from "@/types/productIngredients";
+import { IngredientResponse, IngredientTable, UseIngredientParams } from "@/types/productIngredients";
 
 export const productIngredientsApi = {
   status: "",
@@ -81,11 +81,11 @@ export const productIngredientsApi = {
   },
   
   // Create new product
-  create: async (product: Omit<RequestBodyIngredient, 'id'>): Promise<IngredientTable> => {
+  create: async (product: FormData): Promise<IngredientTable> => {
     try {
-      const response = await apiFetch(API_CONFIG.ENDPOINTS.CREATE_PRODUCT, {
+      const response = await apiFetch(API_CONFIG.ENDPOINTS.CREATE_PRODUCT_INGREDIENTS, {
         method: 'POST',
-        body: JSON.stringify(product),
+        body: product,
       });
       return response.data;
     } catch(error) {

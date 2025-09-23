@@ -13,17 +13,18 @@ function AddProductPage() {
   const [description, setDescription] = useState("");
   const [barcode, setBarcode] = useState("");
   const [category_id, setCategory_id] = useState("");
-  const [stocks, setStocks] = useState("");
+  // const [stocks, setStocks] = useState("");
   const [price, setPrice] = useState("");
   const [status_barang, setStatus_barang] = useState("Tersedia");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [img, setImg] = useState<File | null>(null);
 
   useEffect(() => {
     setLoading(true);
     msKategoriService
-      .getAll()
+      .getAllProjection()
       .then((res) => {
         console.log("Kategori dari API:", res);
         setCategories(res ?? []);
@@ -38,22 +39,23 @@ function AddProductPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("description", description);
+    formData.append("category_id", category_id);
+    // formData.append("stocks", String(stocks));
+    formData.append("price", String(price));
+    formData.append("barcode", barcode);
+    formData.append("status_barang", status_barang);
+    if (img) formData.append("img", img);
     setError("");
-    if (!name || !category_id || !stocks || !price || !status_barang) {
+    if (!name || !category_id || !price || !status_barang) {
       setError("Nama, kategori, dan harga wajib diisi.");
       return;
     }
     setLoading(true);
     try {
-      await productService.create({
-        name,
-        description,
-        category_id,
-        stocks,
-        barcode,
-        price: Number(price),
-        status_barang,
-      });
+      await productService.create(formData);
       router.push("/products");
     } catch (err) {
       setError("Gagal menambah produk." + (err instanceof Error ? `: ${err.message}` : ""));
@@ -83,10 +85,10 @@ function AddProductPage() {
             ))}
           </select>
         </div>
-        <div className="mb-3">
+        {/* <div className="mb-3">
           <label className="block mb-1 font-medium">Stok</label>
           <input type="text" className="px-3 py-2 w-full rounded border" value={stocks} onChange={e => setStocks(e.target.value)} min={0} />
-        </div>
+        </div> */}
         <div className="mb-3">
           <label className="block mb-1 font-medium">Harga</label>
           <input type="text" className="px-3 py-2 w-full rounded border" value={price} onChange={e => setPrice(e.target.value)} min={0} required />
@@ -102,6 +104,14 @@ function AddProductPage() {
         <div className="mb-3">
           <label className="block mb-1 font-medium">Barcode</label>
           <input type="text" className="px-3 py-2 w-full rounded border" value={barcode} onChange={e => setBarcode(e.target.value)} required />
+        </div>
+        <div className="mb-3">
+          <label className="block mb-1 font-medium">Gambar</label>
+          <input
+            type="file"
+            className="px-3 py-2 w-full rounded border"
+            onChange={(e) => setImg(e.target.files?.[0] || null)}
+          />
         </div>
         {error && <div className="mb-2 text-red-500">{error}</div>}
         <button type="submit" className="py-2 w-full text-black bg-white rounded border border-black hover:bg-gray-100" disabled={loading}>
