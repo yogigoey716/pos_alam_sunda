@@ -37,8 +37,10 @@ export async function POST(req: Request) {
     // log raw thrown value for production diagnostics
     console.error("Login error (raw):", err);
 
-    const rawMsg = err && typeof err === "object" && "message" in err ? String((err as any).message).trim() : "";
-    const errorMessage = rawMsg || "Login gagal.";
+    const rawMsg =
+      err && typeof err === "object" && err !== null && "message" in err
+        ? String((err as { message: unknown }).message).trim()
+        : "";    const errorMessage = rawMsg || "Login gagal.";
     return NextResponse.json({ ok: false, message: errorMessage }, { status: 401 });
   }
 }
