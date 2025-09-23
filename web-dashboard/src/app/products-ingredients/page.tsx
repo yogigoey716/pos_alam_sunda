@@ -11,7 +11,7 @@ import { optionsCategory, optionsStatus } from "@/constants/productsOptions";
 import DataTablesReport from "@/components/tables/DataTablesReport";
 import { useExportExcel } from "@/services/utils/formatters";
 
-function ProductsPage() {
+function ProductsIngredientPage() {
   const router = useRouter();
   const { exportToExcel } = useExportExcel();
 
@@ -62,13 +62,13 @@ function ProductsPage() {
       </div>
 
       {/* Action buttons */}
-      <div className="overflow-x-auto relative shadow-md sm:rounded-lg">
+      <div className="overflow-x-auto relative p-5 shadow-md sm:rounded-lg">
         <div className="flex justify-between mb-4">
           <Link
-            href="/products/add"
+            href="/products-ingredients/add"
             className="inline-block px-4 py-2 text-black bg-white rounded-lg border border-black transition hover:bg-gray-100"
           >
-            + Tambah Produk
+            + Tambah Produk Bahan
           </Link>
           <button
             onClick={() => setShowFilter((prev) => !prev)}
@@ -160,4 +160,4 @@ function ProductsPage() {
   );
 }
 
-export default withAuth(ProductsPage);
+export default withAuth(ProductsIngredientPage);

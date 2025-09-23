@@ -1,31 +1,33 @@
-// For legacy/mock data compatibility
-export interface ProductIngredient {
-  id: string; // kode bahan baku
-  name: string; // nama bahan baku
-  qty: number; // jumlah yang digunakan per produk
-  satuan: string; // satuan bahan baku
-}
 
-export interface ProductDummy {
-  id: string;
+export interface ProductDummy{
+  id?: string;
   name: string;
   category: string;
   stock: number;
   price: number;
-  status: string;
-  ingredients?: ProductIngredient[];
+  status: ProductStatus;
+  ingredients?: ProductIngredient[]; // komposisi bahan baku
+  // UI / computed fields
   margin?: number;
   hpp?: number;
   trend?: number;
   laba?: number;
 }
 
+export type ProductStatus = 'Tersedia' | 'Stok Rendah' | 'Habis';
+
+
+export interface ProductIngredient {
+  codeBarang: string; // kode bahan baku
+  stock: number; // jumlah yang digunakan per produk
+  namaBarang?: string; // opsional, hasil lookup untuk UI
+  satuan?: string; // opsional, hasil lookup untuk UI
+}
+
 interface Satuan{
   id: string;
   name: string;
   description: string;
-
-  price: number; // harga satuan bahan baku
 }
 
 interface Ingredient {
@@ -36,9 +38,10 @@ interface Ingredient {
 
 export interface ApiProductIngredient {
   id: string;
+  description: string;
   ingredient: Ingredient;
   satuan: Satuan;
-  qty: number;
+  stock: number;
 }
 
 interface Category {
@@ -53,8 +56,15 @@ export interface Product {
   category?: Category;
   stocks: number;
   price: number;
-  ingredients: ApiProductIngredient[];
+  ingredients?: ApiProductIngredient[];
   status_barang: string;
+  img?: string;
+}
+
+export interface ProductProjections{
+  id: string,
+  name: string,
+  description: string
 }
 
 export interface ProductResponse {
@@ -67,10 +77,11 @@ export interface ProductTable {
   id: string;
   name: string;
   price: number;
-  stocks: string;
+  // stocks: string;
   category: string;
   status_barang: string;
   ingredients?: ProductIngredient[];
+  img?: string;
 }
 
 export interface UseProductsParams {
@@ -92,4 +103,5 @@ export interface RequestBodyProduct{
     barcode: string;
     status_barang: string;
     category_id: string;
+    img?: string;
 }
