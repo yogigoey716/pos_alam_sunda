@@ -42,8 +42,16 @@ export const loginApi = async (credentials: LoginCredentials): Promise<LoginResp
   });
 
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData?.message);
+    // try to parse JSON, otherwise read text, and provide a fallback
+    const text = await response.text().catch(() => "");
+    let message = "";
+    try {
+      const parsed = text ? JSON.parse(text) : {};
+      message = parsed?.message || parsed?.error || "";
+    } catch {
+      message = text || "";
+    }
+    throw new Error(message || `Request failed with status ${response.status}`);
   }
 
   return response.json();

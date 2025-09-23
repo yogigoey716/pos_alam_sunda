@@ -1,18 +1,17 @@
 import { cookies } from "next/headers";
 import { loginApi } from "@/services/api/auth";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
 
     if (!email || !password) {
-      return Response.json({ message: "Email & password wajib diisi." }, { status: 400 });
+      return NextResponse.json({ message: "Email & password wajib diisi." }, { status: 400 });
     }
 
-    // Use data layer for login
     const data = await loginApi({ email, password });
 
-    // Extract token from response
     const { token } = data.data || {};
     if (token) {
       const secure = process.env.NODE_ENV === "production";
@@ -28,18 +27,18 @@ export async function POST(req: Request) {
 
     console.log("Login berhasil:", data);
 
-    return Response.json({
+    return NextResponse.json({
       ok: true,
       status: 200,
       message: "Login berhasil.",
-      backend: data, // kirim balik full response backend dengan struktur yang benar
+      backend: data,
     });
   } catch (err) {
-    console.error("Login error:", err);
-    const errorMessage = err instanceof Error ? err.message : "Login gagal.";
-    return Response.json({ 
-      ok: false, 
-      message: errorMessage 
-    }, { status: 401 });
+    // log raw thrown value for production diagnostics
+    console.error("Login error (raw):", err);
+
+    const rawMsg = err && typeof err === "object" && "message" in err ? String((err as any).message).trim() : "";
+    const errorMessage = rawMsg || "Login gagal.";
+    return NextResponse.json({ ok: false, message: errorMessage }, { status: 401 });
   }
 }
