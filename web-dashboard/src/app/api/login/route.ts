@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { loginApi } from "@/services/api/auth";
 import { NextResponse } from "next/server";
+import { API_CONFIG, buildApiUrl } from "@/config/api";
 
 export async function POST(req: Request) {
   try {
@@ -36,6 +37,7 @@ export async function POST(req: Request) {
   } catch (err) {
     // log raw thrown value for production diagnostics
     console.error("Login error (raw):", err);
+    console.log("Login API URL:", buildApiUrl(API_CONFIG.ENDPOINTS.LOGIN));
 
     const rawMsg =
       err && typeof err === "object" && err !== null && "message" in err
