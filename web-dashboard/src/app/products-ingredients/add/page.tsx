@@ -22,10 +22,10 @@ function AddProductIngredientPage() {
   useEffect(() => {
     setLoading(true);
     msIngredientsService
-      .getAll()
+      .getAllProjection()
       .then((res) => {
         console.log("Ingredients dari API:", res);
-        setIngredients(res ?? [])
+        setIngredients(res ?? []);
       })
       .catch((err) => {
         console.error("Gagal load ingredients:", err);
