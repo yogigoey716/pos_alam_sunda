@@ -46,10 +46,12 @@ const authSlice = createSlice({
     builder
       // Login cases
       .addCase(loginUser.pending, (state) => {
+        console.log("Redux: loginUser.pending");
         state.isLoading = true;
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
+        console.log("Redux: loginUser.fulfilled", action.payload);
         state.isLoading = false;
         state.isAuthenticated = true;
         state.token = action.payload.token;
@@ -57,6 +59,7 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(loginUser.rejected, (state, action) => {
+        console.log("Redux: loginUser.rejected", action.payload);
         state.isLoading = false;
         state.isAuthenticated = false;
         state.token = null;
@@ -73,9 +76,11 @@ const authSlice = createSlice({
       })
       // Initialize auth cases
       .addCase(initializeAuth.pending, (state) => {
+        console.log("Redux: initializeAuth.pending");
         state.isLoading = true;
       })
       .addCase(initializeAuth.fulfilled, (state, action) => {
+        console.log("Redux: initializeAuth.fulfilled", action.payload);
         state.isLoading = false;
         if (action.payload) {
           state.isAuthenticated = true;
@@ -86,6 +91,7 @@ const authSlice = createSlice({
         }
       })
       .addCase(initializeAuth.rejected, (state) => {
+        console.log("Redux: initializeAuth.rejected");
         state.isLoading = false;
         state.isAuthenticated = false;
       });

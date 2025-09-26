@@ -11,6 +11,9 @@ export function useLogin() {
   
   const dispatch = useAppDispatch();
   const { isLoading, error, isAuthenticated } = useAppSelector((state) => state.auth);
+  
+  // Debug logging
+  console.log("useLogin - Auth state:", { isLoading, error, isAuthenticated });
 
   // Redirect if already authenticated
   useEffect(() => {

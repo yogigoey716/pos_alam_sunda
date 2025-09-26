@@ -83,19 +83,25 @@ export const logoutUser = createAsyncThunk(
 export const initializeAuth = createAsyncThunk(
   'auth/initializeAuth',
   async () => {
+    console.log("initializeAuth called");
+    
     // Check if we're in the browser (client-side)
     if (typeof window === 'undefined') {
+      console.log("initializeAuth - SSR detected, returning null");
       return null;
     }
     
     const token = localStorage.getItem('JWT');
+    console.log("initializeAuth - Token from localStorage:", token);
     
     if (token) {
       // Optional: Verify token with backend
       // For now, just assume it's valid if it exists
+      console.log("initializeAuth - Token found, user authenticated");
       return { token, user: null };
     }
     
+    console.log("initializeAuth - No token found, user not authenticated");
     return null;
   }
 );
