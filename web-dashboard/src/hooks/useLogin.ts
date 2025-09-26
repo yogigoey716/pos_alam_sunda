@@ -14,6 +14,11 @@ export function useLogin() {
   
   // Debug logging
   console.log("useLogin - Auth state:", { isLoading, error, isAuthenticated });
+  
+  // Temporary alert for debugging (remove after fixing)
+  if (isLoading) {
+    console.log("🚨 BUTTON IS LOADING - useLogin detected isLoading=true");
+  }
 
   // Redirect if already authenticated
   useEffect(() => {

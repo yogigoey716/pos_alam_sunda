@@ -17,6 +17,11 @@ export default function LoginPage() {
   return (
     <div className="p-6 mx-auto max-w-sm">
       <h1 className="mb-4 text-2xl font-semibold">Masuk</h1>
+      
+      {/* Debug Info - Remove after fixing */}
+      <div className="mb-4 p-2 bg-gray-100 text-xs rounded">
+        <strong>Debug:</strong> isLoading={isLoading.toString()}, error={error || 'null'}
+      </div>
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input
           id="email"
