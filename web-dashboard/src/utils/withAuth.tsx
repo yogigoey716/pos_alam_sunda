@@ -13,7 +13,10 @@ export default function withAuth<P extends Record<string, never> = Record<string
 
     // Initialize auth state on component mount
     useEffect(() => {
-      dispatch(initializeAuth());
+      const initAuth = async () => {
+        await dispatch(initializeAuth());
+      };
+      initAuth();
     }, [dispatch]);
 
     // Show loading while checking auth state

@@ -83,6 +83,11 @@ export const logoutUser = createAsyncThunk(
 export const initializeAuth = createAsyncThunk(
   'auth/initializeAuth',
   async () => {
+    // Check if we're in the browser (client-side)
+    if (typeof window === 'undefined') {
+      return null;
+    }
+    
     const token = localStorage.getItem('JWT');
     
     if (token) {
