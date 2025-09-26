@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { loginUser } from "@/store/actions/authActions";
+import { loginUser, initializeAuth } from "@/store/actions/authActions";
 import { clearError } from "@/store/slices/authSlice";
 
 export function useLogin() {
@@ -19,8 +19,9 @@ export function useLogin() {
     }
   }, [isAuthenticated, router]);
 
-  // Clear error when hook is used
+  // Initialize auth and clear error when hook is used
   useEffect(() => {
+    dispatch(initializeAuth());
     dispatch(clearError());
   }, [dispatch]);
 
