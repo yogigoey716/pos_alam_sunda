@@ -4,9 +4,7 @@ import { useState, useCallback } from "react";
 import withAuth from "@/utils/withAuth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Selects from "@/components/ui/selects";
 import Input from "@/components/ui/input";
-import { optionsStatus } from "@/constants/productsOptions";
 import DataTablesReport from "@/components/tables/DataTablesReport";
 import { useExportExcel } from "@/services/utils/formatters";
 import useSuppliers from "@/hooks/usSuppliers";
@@ -25,7 +23,7 @@ function SuppliersPage() {
         endDate: "",
     });
 
-    const [showFilter, setShowFilter] = useState(false);
+    const [showFilter] = useState(false);
 
     const handleChangeFilter = (
         key: keyof typeof filters,
@@ -70,25 +68,17 @@ function SuppliersPage() {
             >
                 + Tambah Supplier
             </Link>
-            <button
+            {/* <button
                 onClick={() => setShowFilter((prev) => !prev)}
                 className="px-4 py-2 text-sm text-green-700 rounded-lg border border-green-700 hover:bg-green-700 hover:text-white"
             >
                 {showFilter ? "Hide Filter" : "Show Filter"}
-            </button>
+            </button> */}
             </div>
             
             {/* Filters */}
             {showFilter && (
             <div className="flex flex-wrap gap-2 pb-4">
-                <Selects
-                id="status_filter"
-                name="status_filter"
-                label="Status"
-                options={optionsStatus}
-                value={filters.status}
-                onChange={(val) => handleChangeFilter("status", val)}
-                />
                 <Input
                 type="date"
                 id="start_date"

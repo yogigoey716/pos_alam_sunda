@@ -53,6 +53,7 @@ interface Category {
 export interface Product {
   id: string;
   name: string;
+  description: string;
   category?: Category;
   stocks: number;
   price: number;
@@ -76,10 +77,12 @@ export interface ProductResponse {
 export interface ProductTable {
   id: string;
   name: string;
+  description: string;
   price: number;
   // stocks: string;
-  category: string;
+  category: Category | null;
   status_barang: string;
+  barcode?: string;
   ingredients?: ProductIngredient[];
   img?: string;
 }
@@ -100,7 +103,7 @@ export interface RequestBodyProduct{
     description: string;
     stocks: string;
     price: number;
-    barcode: string;
+    barcode?: string;
     status_barang: string;
     category_id: string;
     img?: string;

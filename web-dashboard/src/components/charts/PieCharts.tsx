@@ -1,14 +1,15 @@
 "use client";
 import React from "react";
 import { PieChart, ResponsiveContainer, Tooltip, Pie, Cell } from "recharts";
+import { ChartDataItem } from "@/types/chartsCustom";
 
 interface PieChartsProps {
-  data: { name: string; value: number }[];
+  data: ChartDataItem[];
 }
 
 const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
 
-export default function PieCharts({ data }: PieChartsProps) {
+export const PieCharts: React.FC<PieChartsProps> = ({ data }) => {
   return (
     <ResponsiveContainer width="100%" height={200}>
       <PieChart>

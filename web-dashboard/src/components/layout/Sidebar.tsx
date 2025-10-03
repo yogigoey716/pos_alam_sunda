@@ -1,32 +1,49 @@
 import React, { useState } from "react";
-import { Home, BarChart2, Box, ChevronDown } from "lucide-react";
+import { Home, Box, ChevronDown, FileText } from "lucide-react";
 import Link from "next/link";
+import { PiUnite } from "react-icons/pi";
+import { BiBasket, BiCart, BiSolidBank, BiUser, BiUserCheck, BiUserCircle } from "react-icons/bi";
 
 const menu = [
   { label: "Dashboard", icon: <Home className="w-5 h-5" />, href: "/" },
-  { label: "Penjualan", icon: <BarChart2 className="w-5 h-5" />, href: "/sales" },
   {
     label: "Master Data",
     icon: <Box className="w-5 h-5" />,
     children: [
-      { label: "Produk", icon: <Box className="w-5 h-5" />, href: "/products" },
-      { label: "Bahan Baku", icon: <Box className="w-5 h-5" />, href: "/ingredients" },
-      { label: "Satuan", icon: <Box className="w-5 h-5" />, href: "/ms-satuan" },
-      { label: "Supplier", icon: <Box className="w-5 h-5" />, href: "/suppliers" },
-      { label: "Cabang", icon: <Box className="w-5 h-5" />, href: "/ms-branches" },
+      { label: "Master Produk", icon: <Box className="w-5 h-5" />, href: "/products" },
+      { label: "Master Bahan Baku", icon: <Box className="w-5 h-5" />, href: "/ingredients" },
+      { label: "Master Satuan", icon: <PiUnite className="w-5 h-5" />, href: "/ms-satuan" },
+      { label: "Master Supplier", icon: <Box className="w-5 h-5" />, href: "/suppliers" },
+      { label: "Master Cabang", icon: <Box className="w-5 h-5" />, href: "/ms-branches" },
+      { label: "Master Metode Pembayaran", icon: <Box className="w-5 h-5" />, href: "/ms-payment-methods" },
+      { label: "Product Bahan", icon: <Box className="w-5 h-5" />, href: "/products-ingredients" }
     ],
   },
-  { label: "Product Bahan", icon: <Box className="w-5 h-5" />, href: "/products-ingredients" },
-  { label: "Pembelian Bahan", icon: <Box className="w-5 h-5" />, href: "/ingredient-purchases" },
   { 
-    label: "Management Stock", 
-    icon: <Box className="w-5 h-5" />, 
+    label: "User Management", 
+    icon: <BiUser className="w-5 h-5" />,
     children: [
-      { label: "Stock Bahan", icon: <Box className="w-5 h-5" />, href: "/stock-bahan" },
-      { label: "Stock Produk", icon: <Box className="w-5 h-5" />, href: "/stock-produk" },
+      { label: "User", icon: <BiUserCircle className="w-5 h-5" />, href: "/ms-users" },
+      { label: "Role", icon: <BiUserCheck className="w-5 h-5" />, href: "/ms-roles" },
+    ]
+  },
+  { 
+    label: "Report", 
+    icon: <FileText className="w-5 h-5" />, 
+    children: [
+      { label: "Stock Bahan", icon: <Box className="w-5 h-5" />, href: "/branch-ingredients" },
+      { label: "Stock Produk", icon: <Box className="w-5 h-5" />, href: "/branch-products" },
     ],
   },
-  { label: "Transaksi", icon: <Box className="w-5 h-5" />, href: "/transactions" },
+  {
+    label: "Transaksi",
+    icon: <BiSolidBank className="w-5 h-5" />,
+    children: [
+      { label: "Pembelian Bahan", icon: <Box className="w-5 h-5" />, href: "/ingredient-purchases" },
+      { label: "Penjualan", icon: <BiCart className="w-5 h-5" />, href: "/transactions" },
+    ],
+  },
+  { label: "Produksi Produk", icon: <BiBasket className="w-5 h-5" />, href: "/product-productions" },
 ];
 
 export default function Sidebar() {
@@ -37,7 +54,7 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="hidden flex-col gap-4 px-4 py-6 w-56 min-h-screen bg-white border-r border-gray-200 shadow-lg md:flex dark:bg-neutral-900 dark:border-neutral-800">
+    <aside className="hidden flex-col gap-4 px-4 py-6 w-full min-h-screen bg-white border-r border-gray-200 shadow-lg max-w-72 md:flex dark:bg-neutral-900 dark:border-neutral-800">
       <div className="mb-8 text-2xl font-bold tracking-tight text-gray-800 dark:text-gray-100">
         Alam Sunda Dashboard
       </div>

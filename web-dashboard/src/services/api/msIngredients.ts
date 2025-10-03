@@ -4,8 +4,6 @@ import { Ingredients, IngredientsResponse, RequestBodyIngredients, UseIngredient
 
 export const msIngredientsService = {
     getAll: async ({
-        status,
-        cate,
         search,
         page,
         size,
@@ -20,8 +18,6 @@ export const msIngredientsService = {
       }> => {
         try {
           const queryParams = new URLSearchParams({
-            ...(status && { status_filter: status }),
-            ...(cate && { category: cate }),
             ...(search && { search }),
             ...(startDate && { start_date: startDate }),
             ...(endDate && { end_date: endDate }),
@@ -37,7 +33,14 @@ export const msIngredientsService = {
           );
     
           if(response.code !== 200){
-            throw new Error(response.detail || "Gagal memuat produk");
+            // throw new Error(response.detail || "Gagal memuat produk");
+            return {
+              items: [],
+              total: 0,
+              pages: 0,
+              isLoading: false,
+              error: response.detail || "Gagal memuat produk",
+            };
           }
     
           const data = response.data as IngredientsResponse;

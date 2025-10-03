@@ -1,6 +1,6 @@
 import { apiFetch } from '@/lib/api';
 import { API_CONFIG } from '@/config/api';
-import { ProductDummy, ProductProjections, ProductResponse, ProductTable, RequestBodyProduct, UseProductsParams } from '@/types/product';
+import { ProductDummy, ProductProjections, ProductResponse, ProductTable, UseProductsParams } from '@/types/product';
 import { mockManagementStock } from './managementStock';
 
 // Mock data - will be replaced with real API calls
@@ -165,16 +165,23 @@ export const productsApi = {
       );
 
       if(response.code !== 200){
-        throw new Error(response.detail || "Gagal memuat produk");
+        // throw new Error(response.detail || "Gagal memuat produk");
+        return {
+          items: [],
+          total: 0,
+          pages: 0,
+          isLoading: false,
+          error: response.detail || "Gagal memuat produk",
+        };
       }
 
       const data = response.data as ProductResponse;
       const dataProduct: ProductTable[] = data.items.map((item) => ({
         id: item.id,
         name: item.name,
+        description: item.description,
         price: item.price,
-        // stocks: item.stocks.toString(),
-        category: item.category?.description ?? "-",
+        category: item.category || null,
         status_barang: item.status_barang,
         img: item.img ? `http://localhost:8200/static/${item.img}` : "Image not found",
         ingredients: item.ingredients?.map((ing) => ({
@@ -201,7 +208,7 @@ export const productsApi = {
   // Get product by ID
   getById: async (id: string): Promise<ProductTable | null> => {
     try {
-      const response = await apiFetch(`/products/${id}`);
+      const response = await apiFetch(`${API_CONFIG.ENDPOINTS.PRODUCTS}${id}`);
       return response.data;
     } catch {
       // Fallback to mock data
@@ -238,11 +245,11 @@ export const productsApi = {
   },
   
   // Update product
-  update: async (id: string, product: Partial<RequestBodyProduct>): Promise<ProductTable | null> => {
+  update: async (id: string, product: FormData): Promise<ProductTable | null> => {
     try {
-      const response = await apiFetch(`/products/${id}`, {
+      const response = await apiFetch(`${API_CONFIG.ENDPOINTS.PRODUCTS}${id}/`, {
         method: 'PUT',
-        body: JSON.stringify(product),
+        body: product,
       });
       return response.data;
     } catch(error) {
@@ -256,7 +263,7 @@ export const productsApi = {
   // Delete product
   delete: async (id: string): Promise<boolean> => {
     try {
-      await apiFetch(`/products/${id}`, {
+      await apiFetch(`${API_CONFIG.ENDPOINTS.PRODUCTS}${id}`, {
         method: 'DELETE',
       });
       return true;

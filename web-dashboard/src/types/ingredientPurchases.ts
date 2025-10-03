@@ -35,8 +35,7 @@ export interface RequestBodyIngredientPurchases{
 }
 
 export interface UseIngredientPurchasesParams {
-    status: string;
-    cate: string;
+    branch: string;
     search: string;
     page: number;
     size: number;

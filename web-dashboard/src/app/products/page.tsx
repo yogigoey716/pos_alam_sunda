@@ -18,6 +18,7 @@ import {
 import { ProductIngredient } from "@/types/product";
 import { formatCurrency, useExportExcel } from "@/services/utils/formatters";
 import Image from "next/image";
+import { productService } from "@/services/api/products";
 
 function ProductsPage() {
   const router = useRouter();
@@ -49,6 +50,12 @@ function ProductsPage() {
 
   const handleExport = () => {
     exportToExcel(products, "products", "Products");
+  };
+
+  const handleDelete = (id: string) => {
+    productService.delete(id).then(() => {
+      window.location.reload();
+    });
   };
 
   const handleChangePage = (newPage: number) => {
@@ -153,6 +160,7 @@ function ProductsPage() {
                 const img = item.img?.trim();
                 return {
                   ...rest,
+                  category: item.category?.description || "-",
                   img: img && /^https?:\/\//.test(img) ? (
                     <Image
                       src={img}
@@ -178,6 +186,22 @@ function ProductsPage() {
                       Lihat Komposisi
                     </button>
                   ),
+                  action: (
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => router.push(`/products/edit/${item.id}`)}
+                        className="px-3 py-2 text-sm font-medium text-blue-700 rounded-lg border border-blue-700 hover:text-white hover:bg-blue-800"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(item.id)}
+                        className="px-3 py-2 text-sm font-medium text-red-700 rounded-lg border border-red-700 hover:text-white hover:bg-red-800"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  ),
                 };
               }) ?? []
             }
@@ -188,6 +212,7 @@ function ProductsPage() {
               { label: "Status", key: "status_barang" },
               { label: "Gambar", key: "img" },
               { label: "Komposisi", key: "actions" },
+              { label: "Aksi", key: "action" },
             ]}
             page={filters.page}
             setPage={handleChangePage}

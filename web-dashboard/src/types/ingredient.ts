@@ -18,8 +18,6 @@ export interface RequestBodyIngredients{
 }
 
 export interface UseIngredientsParams {
-    status: string;
-    cate: string;
     search: string;
     page: number;
     size: number;

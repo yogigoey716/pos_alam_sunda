@@ -13,9 +13,10 @@ interface SelectsProps {
   value: string;
   onChange: (value: string) => void;
   className?: string;
+  loading?: boolean;
 }
 
-export default function Selects({ label, options, id, name, value, onChange, className }: SelectsProps) {
+export default function Selects({ label, options, id, name, value, onChange, className, loading }: SelectsProps) {
   return (
     <form className={className}>
       <label
@@ -34,6 +35,7 @@ export default function Selects({ label, options, id, name, value, onChange, cla
                    dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
                    dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
       >
+        <option value="">{loading ? "Loading..." : "Pilih " + label}</option>
         {options.map((option, index) => (
           <option key={index} value={option.value}>
             {option.label}

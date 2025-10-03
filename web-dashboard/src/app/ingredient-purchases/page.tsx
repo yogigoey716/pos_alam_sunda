@@ -1,23 +1,26 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import withAuth from "@/utils/withAuth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Selects from "@/components/ui/selects";
 import Input from "@/components/ui/input";
-import { optionsCategory, optionsStatus } from "@/constants/productsOptions";
 import DataTablesReport from "@/components/tables/DataTablesReport";
 import { formatCurrency, useExportExcel } from "@/services/utils/formatters";
 import useIngredientPurchases from "@/hooks/useIngredientPurchases";
+import { Branch } from "@/types/ingredientPurchases";
+import { setLoading } from "@/store/slices/authSlice";
+import { msBranchesService } from "@/services/api/msBranches";
 
 function IngredientPurchasesPage() {
   const router = useRouter();
   const { exportToExcel } = useExportExcel();
 
+  const [branch, setBranch] = useState<Branch[]>([]);
+
   const [filters, setFilters] = useState({
-    status: "",
-    cate: "",
+    branch: "",
     search: "",
     page: 1,
     size: 10,
@@ -26,6 +29,22 @@ function IngredientPurchasesPage() {
   });
 
   const [showFilter, setShowFilter] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    msBranchesService
+      .getAllProjection()
+      .then((res) => {
+        console.log("Branch dari API:", res);
+        setBranch(res ?? []);
+      })
+      .catch((err) => {
+        console.error("Gagal load branch:", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
   const handleChangeFilter = (
     key: keyof typeof filters,
@@ -82,20 +101,12 @@ function IngredientPurchasesPage() {
         {showFilter && (
           <div className="flex flex-wrap gap-2 pb-4">
             <Selects
-              id="status_filter"
-              name="status_filter"
-              label="Status"
-              options={optionsStatus}
-              value={filters.status}
-              onChange={(val) => handleChangeFilter("status", val)}
-            />
-            <Selects
-              id="category"
-              name="category"
-              label="Category"
-              options={optionsCategory}
-              value={filters.cate}
-              onChange={(val) => handleChangeFilter("cate", val)}
+              id="branch"
+              name="branch"
+              label="Cabang"
+              options={branch.map((branch) => ({ label: branch.name, value: branch.id ?? "" }))}
+              value={filters.branch}
+              onChange={(val) => handleChangeFilter("branch", val)}
             />
             <Input
               type="date"

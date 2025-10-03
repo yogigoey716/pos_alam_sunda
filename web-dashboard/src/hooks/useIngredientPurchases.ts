@@ -44,8 +44,7 @@ export default function useIngredientPurchases(params: UseIngredientPurchasesPar
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    params.status,
-    params.cate,
+    params.branch,
     params.search,
     params.page,
     params.size,

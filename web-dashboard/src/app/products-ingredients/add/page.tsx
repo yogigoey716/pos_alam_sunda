@@ -25,7 +25,7 @@ function AddProductIngredientPage() {
       .getAllProjection()
       .then((res) => {
         console.log("Ingredients dari API:", res);
-        setIngredients(res ?? []);
+        setIngredients(res ?? [])
       })
       .catch((err) => {
         console.error("Gagal load ingredients:", err);

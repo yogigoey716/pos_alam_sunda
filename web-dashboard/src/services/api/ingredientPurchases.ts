@@ -4,8 +4,7 @@ import { IngredientPurchase, IngredientPurchasesResponse, RequestBodyIngredientP
 
 export const ingredientPurchasesService = {
     getAll: async ({
-        status,
-        cate,
+        branch,
         search,
         page,
         size,
@@ -20,8 +19,7 @@ export const ingredientPurchasesService = {
       }> => {
         try {
           const queryParams = new URLSearchParams({
-            ...(status && { status_filter: status }),
-            ...(cate && { category: cate }),
+            ...(branch && { branch: branch }),
             ...(search && { search }),
             ...(startDate && { start_date: startDate }),
             ...(endDate && { end_date: endDate }),
@@ -37,7 +35,13 @@ export const ingredientPurchasesService = {
           );
     
           if(response.code !== 200){
-            throw new Error(response.detail || "Gagal memuat pembelian bahan");
+            return {
+              items: [],
+              total: 0,
+              pages: 0,
+              isLoading: false,
+              error: new Error(response.detail || "Gagal memuat pembelian bahan"),
+            };
           }
     
           const data = response.data as IngredientPurchasesResponse;

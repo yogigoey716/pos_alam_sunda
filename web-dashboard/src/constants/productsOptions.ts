@@ -1,8 +1,8 @@
 export const optionsStatus = [
     { label: "All", value: "" },
-    { label: "Tersedia", value: "tersedia" },
-    { label: "Stok Rendah", value: "stok rendah" },
-    { label: "Habis", value: "habis" },
+    { label: "Stock Tersedia", value: "tersedia" },
+    { label: "Stock Hampir Habis", value: "hampir habis" },
+    { label: "Stock Habis", value: "habis" },
   ];
     
 export const optionsCategory = [

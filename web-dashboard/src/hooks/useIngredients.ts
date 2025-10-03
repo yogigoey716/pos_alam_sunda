@@ -44,8 +44,6 @@ export default function useIngredients(params: UseIngredientsParams) {
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    params.status,
-    params.cate,
     params.search,
     params.page,
     params.size,

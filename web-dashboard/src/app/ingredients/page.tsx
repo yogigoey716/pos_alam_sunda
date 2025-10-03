@@ -5,9 +5,7 @@ import withAuth from "@/utils/withAuth";
 import useIngredients from "@/hooks/useIngredients";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Selects from "@/components/ui/selects";
 import Input from "@/components/ui/input";
-import { optionsCategory, optionsStatus } from "@/constants/productsOptions";
 import DataTablesReport from "@/components/tables/DataTablesReport";
 import { useExportExcel } from "@/services/utils/formatters";
 
@@ -16,8 +14,6 @@ function IngredientsPage() {
   const { exportToExcel } = useExportExcel();
 
   const [filters, setFilters] = useState({
-    status: "",
-    cate: "",
     search: "",
     page: 1,
     size: 10,
@@ -81,22 +77,6 @@ function IngredientsPage() {
         {/* Filters */}
         {showFilter && (
           <div className="flex flex-wrap gap-2 pb-4">
-            <Selects
-              id="status_filter"
-              name="status_filter"
-              label="Status"
-              options={optionsStatus}
-              value={filters.status}
-              onChange={(val) => handleChangeFilter("status", val)}
-            />
-            <Selects
-              id="category"
-              name="category"
-              label="Category"
-              options={optionsCategory}
-              value={filters.cate}
-              onChange={(val) => handleChangeFilter("cate", val)}
-            />
             <Input
               type="date"
               id="start_date"
